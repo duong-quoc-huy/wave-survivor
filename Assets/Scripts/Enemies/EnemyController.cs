@@ -6,6 +6,9 @@ public class EnemyController : MonoBehaviour
     [SerializeField, Min(0f)]
     private float moveSpeed = 2f;
 
+    [SerializeField, Min(1)]
+    private int contactDamage = 1;
+
     private Rigidbody2D body;
     private Transform target;
 
@@ -16,7 +19,8 @@ public class EnemyController : MonoBehaviour
 
     private void Start()
     {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        GameObject player =
+            GameObject.FindGameObjectWithTag("Player");
 
         if (player == null)
         {
@@ -46,6 +50,17 @@ public class EnemyController : MonoBehaviour
         );
 
         body.MovePosition(nextPosition);
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        PlayerHealth playerHealth =
+            other.GetComponentInParent<PlayerHealth>();
+
+        if (playerHealth != null)
+        {
+            playerHealth.TakeDamage(contactDamage);
+        }
     }
 
     private void OnDisable()
