@@ -1334,6 +1334,10 @@ PrefabInstance:
       propertyPath: m_Constraints
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 8836366788305692468, guid: 04cb88da1eaeacc42b741860754ab4b4, type: 3}
+      propertyPath: xpOrbPrefab
+      value: 
+      objectReference: {fileID: 6203023440549912989, guid: 69b927aa84bb5f34cb4476e12aab66c2, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1650,6 +1654,7 @@ GameObject:
   - component: {fileID: 1752682145}
   - component: {fileID: 1752682149}
   - component: {fileID: 1752682150}
+  - component: {fileID: 1752682151}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1869,6 +1874,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHealth: 10
   invincibilityDuration: 0.75
+--- !u!114 &1752682151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1752682142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cae16407b565244399e91944e6713bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
+  startingExperienceRequirement: 5
+  requirementMultiplier: 1.5
 --- !u!1 &1769939714
 GameObject:
   m_ObjectHideFlags: 0
