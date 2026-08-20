@@ -4,16 +4,27 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [Header("References")]
+    [Header("Enemy Prefabs")]
     [SerializeField]
-    private EnemyHealth enemyPrefab;
+    private EnemyHealth ghostPrefab;
+
+    [SerializeField]
+    private EnemyHealth spiderPrefab;
 
     [SerializeField]
     private Transform enemyParent;
 
+    [Header("Spider Unlock")]
+    [SerializeField, Min(0f)]
+    private float spiderUnlockTime = 60f;
+
+    [SerializeField, Range(0f, 1f)]
+    private float spiderSpawnChance = 0.35f;
+
     [Header("Arena")]
     [SerializeField]
-    private Vector2 arenaHalfSize = new Vector2(14f, 9f);
+    private Vector2 arenaHalfSize =
+        new Vector2(14f, 9f);
 
     [Header("Spawn Timing")]
     [SerializeField, Min(0f)]
@@ -32,7 +43,9 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField, Min(1)]
     private int maxActiveEnemies = 60;
 
-    private readonly List<EnemyHealth> activeEnemies = new();
+    private readonly List<EnemyHealth> activeEnemies =
+        new List<EnemyHealth>();
+
     private float elapsedTime;
 
     private void Update()
@@ -53,22 +66,56 @@ public class EnemySpawner : MonoBehaviour
                 SpawnEnemy();
             }
 
-            yield return new WaitForSeconds(GetCurrentSpawnInterval());
+            yield return new WaitForSeconds(
+                GetCurrentSpawnInterval()
+            );
         }
     }
 
     private void SpawnEnemy()
     {
-        Vector2 spawnPosition = GetRandomArenaEdgePosition();
+        EnemyHealth selectedPrefab =
+            SelectEnemyPrefab();
+
+        if (selectedPrefab == null)
+        {
+            Debug.LogError(
+                "EnemySpawner is missing an enemy prefab.",
+                this
+            );
+
+            return;
+        }
+
+        Vector2 spawnPosition =
+            GetRandomArenaEdgePosition();
 
         EnemyHealth enemy = Instantiate(
-            enemyPrefab,
+            selectedPrefab,
             spawnPosition,
             Quaternion.identity,
             enemyParent
         );
 
         activeEnemies.Add(enemy);
+    }
+
+    private EnemyHealth SelectEnemyPrefab()
+    {
+        bool spiderIsUnlocked =
+            elapsedTime >= spiderUnlockTime;
+
+        bool shouldSpawnSpider =
+            spiderIsUnlocked &&
+            spiderPrefab != null &&
+            Random.value < spiderSpawnChance;
+
+        if (shouldSpawnSpider)
+        {
+            return spiderPrefab;
+        }
+
+        return ghostPrefab;
     }
 
     private Vector2 GetRandomArenaEdgePosition()
@@ -78,27 +125,39 @@ public class EnemySpawner : MonoBehaviour
 
         switch (side)
         {
-            case 0: // Left
+            case 0:
                 return center + new Vector2(
                     -arenaHalfSize.x,
-                    Random.Range(-arenaHalfSize.y, arenaHalfSize.y)
+                    Random.Range(
+                        -arenaHalfSize.y,
+                        arenaHalfSize.y
+                    )
                 );
 
-            case 1: // Right
+            case 1:
                 return center + new Vector2(
                     arenaHalfSize.x,
-                    Random.Range(-arenaHalfSize.y, arenaHalfSize.y)
+                    Random.Range(
+                        -arenaHalfSize.y,
+                        arenaHalfSize.y
+                    )
                 );
 
-            case 2: // Bottom
+            case 2:
                 return center + new Vector2(
-                    Random.Range(-arenaHalfSize.x, arenaHalfSize.x),
+                    Random.Range(
+                        -arenaHalfSize.x,
+                        arenaHalfSize.x
+                    ),
                     -arenaHalfSize.y
                 );
 
-            default: // Top
+            default:
                 return center + new Vector2(
-                    Random.Range(-arenaHalfSize.x, arenaHalfSize.x),
+                    Random.Range(
+                        -arenaHalfSize.x,
+                        arenaHalfSize.x
+                    ),
                     arenaHalfSize.y
                 );
         }
@@ -110,14 +169,20 @@ public class EnemySpawner : MonoBehaviour
 
         float currentInterval =
             initialSpawnInterval -
-            intervalDecreasePerMinute * elapsedMinutes;
+            intervalDecreasePerMinute *
+            elapsedMinutes;
 
-        return Mathf.Max(minimumSpawnInterval, currentInterval);
+        return Mathf.Max(
+            minimumSpawnInterval,
+            currentInterval
+        );
     }
 
     private void RemoveDestroyedEnemies()
     {
-        activeEnemies.RemoveAll(enemy => enemy == null);
+        activeEnemies.RemoveAll(
+            enemy => enemy == null
+        );
     }
 
     private void OnDrawGizmosSelected()
