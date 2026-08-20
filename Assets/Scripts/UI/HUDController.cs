@@ -9,15 +9,29 @@ public class HUDController : MonoBehaviour
     private PlayerHealth playerHealth;
 
     [SerializeField]
+    private PlayerStats playerStats;
+
+    [SerializeField]
     private RunTimer runTimer;
 
-    [Header("UI References")]
+    [Header("Health UI")]
     [SerializeField]
     private Slider healthSlider;
 
     [SerializeField]
     private TMP_Text healthText;
 
+    [Header("Experience UI")]
+    [SerializeField]
+    private Slider experienceSlider;
+
+    [SerializeField]
+    private TMP_Text experienceText;
+
+    [SerializeField]
+    private TMP_Text levelText;
+
+    [Header("Timer UI")]
     [SerializeField]
     private TMP_Text timerText;
 
@@ -26,6 +40,30 @@ public class HUDController : MonoBehaviour
         if (playerHealth != null)
         {
             playerHealth.HealthChanged += UpdateHealth;
+        }
+
+        if (playerStats != null)
+        {
+            playerStats.ExperienceChanged +=
+                UpdateExperience;
+
+            playerStats.LevelChanged += UpdateLevel;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (playerHealth != null)
+        {
+            playerHealth.HealthChanged -= UpdateHealth;
+        }
+
+        if (playerStats != null)
+        {
+            playerStats.ExperienceChanged -=
+                UpdateExperience;
+
+            playerStats.LevelChanged -= UpdateLevel;
         }
     }
 
@@ -38,15 +76,15 @@ public class HUDController : MonoBehaviour
                 playerHealth.MaxHealth
             );
         }
-    }
 
-
-
-    private void OnDisable()
-    {
-        if (playerHealth != null)
+        if (playerStats != null)
         {
-            playerHealth.HealthChanged -= UpdateHealth;
+            UpdateExperience(
+                playerStats.CurrentExperience,
+                playerStats.ExperienceToNextLevel
+            );
+
+            UpdateLevel(playerStats.Level);
         }
     }
 
@@ -81,6 +119,36 @@ public class HUDController : MonoBehaviour
         {
             healthText.text =
                 $"{currentHealth} / {maximumHealth}";
+        }
+    }
+
+    private void UpdateExperience(
+        int currentExperience,
+        int requiredExperience
+    )
+    {
+        if (experienceSlider != null)
+        {
+            experienceSlider.maxValue =
+                requiredExperience;
+
+            experienceSlider.value =
+                currentExperience;
+        }
+
+        if (experienceText != null)
+        {
+            experienceText.text =
+                $"XP {currentExperience} / " +
+                $"{requiredExperience}";
+        }
+    }
+
+    private void UpdateLevel(int level)
+    {
+        if (levelText != null)
+        {
+            levelText.text = $"Level {level}";
         }
     }
 }
