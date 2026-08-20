@@ -63,6 +63,21 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    public void IncreaseMaxHealth(int amount)
+    {
+        if (isDead || amount <= 0)
+        {
+            return;
+        }
+
+        maxHealth += amount;
+        currentHealth += amount;
+
+        HealthChanged?.Invoke(currentHealth, maxHealth);
+    }
+
+
+
     private void Die()
     {
         isDead = true;

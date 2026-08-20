@@ -25,9 +25,12 @@ public class Projectile : MonoBehaviour
         Destroy(gameObject, lifetime);
     }
 
-    public void Initialize(Vector2 direction)
+    public void Initialize(Vector2 direction, int bonusDamage)
     {
-        body.linearVelocity = direction.normalized * speed;
+        damage += Mathf.Max(0, bonusDamage);
+
+        body.linearVelocity =
+            direction.normalized * speed;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

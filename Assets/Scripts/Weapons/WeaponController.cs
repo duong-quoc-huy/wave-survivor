@@ -15,6 +15,7 @@ public class WeaponController : MonoBehaviour
     private float attackInterval = 0.75f;
 
     private float attackTimer;
+    private int projectileDamageBonus;
 
     private void Update()
     {
@@ -81,8 +82,40 @@ public class WeaponController : MonoBehaviour
             Quaternion.identity
         );
 
-        projectile.Initialize(direction);
+        projectile.Initialize(direction, projectileDamageBonus);
         return true;
+    }
+
+    public void IncreaseAttackRange(float amount)
+    {
+        if (amount > 0f)
+        {
+            attackRange += amount;
+        }
+    }
+
+    public void IncreaseAttackSpeed(float percentage)
+    {
+        if (percentage <= 0f)
+        {
+            return;
+        }
+
+        float multiplier =
+            1f - Mathf.Clamp(percentage, 0f, 0.9f);
+
+        attackInterval = Mathf.Max(
+            0.1f,
+            attackInterval * multiplier
+        );
+    }
+
+    public void IncreaseProjectileDamage(int amount)
+    {
+        if (amount > 0)
+        {
+            projectileDamageBonus += amount;
+        }
     }
 
     private void OnDrawGizmosSelected()

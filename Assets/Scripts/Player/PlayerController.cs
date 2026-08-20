@@ -26,6 +26,14 @@ public class PlayerController : MonoBehaviour
         body.linearVelocity = direction * moveSpeed;
     }
 
+    public void IncreaseMoveSpeed(float amount)
+    {
+        if (amount > 0f)
+        {
+            moveSpeed += amount;
+        }
+    }
+
     private void OnDisable()
     {
         movementInput = Vector2.zero;
