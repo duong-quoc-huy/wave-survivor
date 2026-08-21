@@ -16,16 +16,27 @@ public class GameManager : MonoBehaviour
 
     [Header("Result UI")]
     [SerializeField] private GameObject endPanel;
+    [SerializeField] private Image resultWindowImage;
+    [SerializeField] private Image resultIconImage;
     [SerializeField] private TMP_Text resultTitleText;
     [SerializeField] private TMP_Text resultStatsText;
     [SerializeField] private Button restartButton;
+    [SerializeField] private Button mainMenuButton;
+
+    [Header("Result Artwork")]
+    [SerializeField] private Sprite victoryWindowSprite;
+    [SerializeField] private Sprite defeatWindowSprite;
+    [SerializeField] private Sprite victoryIconSprite;
+    [SerializeField] private Sprite defeatIconSprite;
+
+    [Header("Scene Navigation")]
+    [SerializeField] private string mainMenuSceneName = "MainMenuScene";
 
     private bool gameStarted;
     private bool runHasEnded;
 
     private void Awake()
     {
-        // GameScene now begins immediately.
         Time.timeScale = 1f;
 
         gameStarted = true;
@@ -38,6 +49,12 @@ public class GameManager : MonoBehaviour
         {
             restartButton.onClick.RemoveAllListeners();
             restartButton.onClick.AddListener(RestartGame);
+        }
+
+        if (mainMenuButton != null)
+        {
+            mainMenuButton.onClick.RemoveAllListeners();
+            mainMenuButton.onClick.AddListener(ReturnToMainMenu);
         }
     }
 
@@ -89,19 +106,21 @@ public class GameManager : MonoBehaviour
 
     private void UpdateResultUI(bool playerWon)
     {
+        UpdateResultArtwork(playerWon);
+
         if (resultTitleText != null)
         {
             if (playerWon)
             {
                 resultTitleText.text = "VICTORY!";
                 resultTitleText.color =
-                    new Color(1f, 0.82f, 0.3f);
+                    new Color32(255, 211, 78, 255);
             }
             else
             {
                 resultTitleText.text = "GAME OVER";
                 resultTitleText.color =
-                    new Color(1f, 0.42f, 0.42f);
+                    new Color32(255, 107, 107, 255);
             }
         }
 
@@ -124,6 +143,30 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void UpdateResultArtwork(bool playerWon)
+    {
+        Sprite selectedWindowSprite = playerWon
+            ? victoryWindowSprite
+            : defeatWindowSprite;
+
+        Sprite selectedIconSprite = playerWon
+            ? victoryIconSprite
+            : defeatIconSprite;
+
+        if (resultWindowImage != null &&
+            selectedWindowSprite != null)
+        {
+            resultWindowImage.sprite = selectedWindowSprite;
+        }
+
+        if (resultIconImage != null &&
+            selectedIconSprite != null)
+        {
+            resultIconImage.sprite = selectedIconSprite;
+            resultIconImage.preserveAspect = true;
+        }
+    }
+
     public void RestartGame()
     {
         Time.timeScale = 1f;
@@ -131,5 +174,11 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(
             SceneManager.GetActiveScene().name
         );
+    }
+
+    public void ReturnToMainMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(mainMenuSceneName);
     }
 }
