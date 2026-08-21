@@ -14,11 +14,6 @@ public class GameManager : MonoBehaviour
     [SerializeField, Min(1f)]
     private float targetSurvivalTime = 300f;
 
-    [Header("Start Menu")]
-    [SerializeField] private GameObject startPanel;
-    [SerializeField] private Button startButton;
-    [SerializeField] private Button quitButton;
-
     [Header("Result UI")]
     [SerializeField] private GameObject endPanel;
     [SerializeField] private TMP_Text resultTitleText;
@@ -30,28 +25,14 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        Time.timeScale = 0f;
+        // GameScene now begins immediately.
+        Time.timeScale = 1f;
 
-        gameStarted = false;
+        gameStarted = true;
         runHasEnded = false;
-
-        if (startPanel != null)
-            startPanel.SetActive(true);
 
         if (endPanel != null)
             endPanel.SetActive(false);
-
-        if (startButton != null)
-        {
-            startButton.onClick.RemoveAllListeners();
-            startButton.onClick.AddListener(StartGame);
-        }
-
-        if (quitButton != null)
-        {
-            quitButton.onClick.RemoveAllListeners();
-            quitButton.onClick.AddListener(QuitGame);
-        }
 
         if (restartButton != null)
         {
@@ -79,19 +60,6 @@ public class GameManager : MonoBehaviour
 
         if (runTimer.ElapsedTime >= targetSurvivalTime)
             EndRun(true);
-    }
-
-    private void StartGame()
-    {
-        if (gameStarted)
-            return;
-
-        gameStarted = true;
-
-        if (startPanel != null)
-            startPanel.SetActive(false);
-
-        Time.timeScale = 1f;
     }
 
     private void HandlePlayerDeath()
@@ -163,14 +131,5 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(
             SceneManager.GetActiveScene().name
         );
-    }
-
-    public void QuitGame()
-    {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
     }
 }
