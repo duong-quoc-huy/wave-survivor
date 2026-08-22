@@ -6,38 +6,94 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     [Header("Game References")]
-    [SerializeField] private PlayerHealth playerHealth;
-    [SerializeField] private PlayerStats playerStats;
-    [SerializeField] private RunTimer runTimer;
+    [SerializeField]
+    private PlayerHealth playerHealth;
+
+    [SerializeField]
+    private PlayerStats playerStats;
+
+    [SerializeField]
+    private RunTimer runTimer;
+
+    [Header("Stage Progress")]
+    [SerializeField, Range(1, 5)]
+    private int currentStageId = 1;
 
     [Header("Run Settings")]
     [SerializeField, Min(1f)]
     private float targetSurvivalTime = 300f;
 
     [Header("Result UI")]
-    [SerializeField] private GameObject endPanel;
-    [SerializeField] private Image resultWindowImage;
-    [SerializeField] private Image resultIconImage;
-    [SerializeField] private TMP_Text resultTitleText;
-    [SerializeField] private TMP_Text resultStatsText;
-    [SerializeField] private Button restartButton;
-    [SerializeField] private Button mainMenuButton;
+    [SerializeField]
+    private GameObject endPanel;
+
+    [SerializeField]
+    private Image resultWindowImage;
+
+    [SerializeField]
+    private Image resultIconImage;
+
+    [SerializeField]
+    private TMP_Text resultTitleText;
+
+    [SerializeField]
+    private TMP_Text resultStatsText;
+
+    [SerializeField]
+    private Button restartButton;
+
+    [SerializeField]
+    private Button mainMenuButton;
 
     [Header("Result Artwork")]
-    [SerializeField] private Sprite victoryWindowSprite;
-    [SerializeField] private Sprite defeatWindowSprite;
-    [SerializeField] private Sprite victoryIconSprite;
-    [SerializeField] private Sprite defeatIconSprite;
+    [SerializeField]
+    private Sprite victoryWindowSprite;
+
+    [SerializeField]
+    private Sprite defeatWindowSprite;
+
+    [SerializeField]
+    private Sprite victoryIconSprite;
+
+    [SerializeField]
+    private Sprite defeatIconSprite;
 
     [Header("Scene Navigation")]
-    [SerializeField] private string mainMenuSceneName = "MainMenuScene";
+    [SerializeField]
+    private string mainMenuSceneName = "MainMenuScene";
 
     private bool gameStarted;
     private bool runHasEnded;
 
+    private void PrepareSelectedStage()
+    {
+        int selectedStageId =
+            StageRunContext.SelectedStageId;
+
+        if (!LocalSaveSystem.IsStageUnlocked(
+                selectedStageId
+            ))
+        {
+            Debug.LogWarning(
+                $"Selected Stage {selectedStageId} " +
+                "is locked. Stage 1 will be used."
+            );
+
+            selectedStageId = 1;
+            StageRunContext.SelectStage(1);
+        }
+
+        currentStageId = selectedStageId;
+
+        Debug.Log(
+            $"Starting Stage {currentStageId}."
+        );
+    }
+
     private void Awake()
     {
         Time.timeScale = 1f;
+        PrepareSelectedStage();
 
         gameStarted = true;
         runHasEnded = false;
@@ -54,7 +110,9 @@ public class GameManager : MonoBehaviour
         if (mainMenuButton != null)
         {
             mainMenuButton.onClick.RemoveAllListeners();
-            mainMenuButton.onClick.AddListener(ReturnToMainMenu);
+            mainMenuButton.onClick.AddListener(
+                ReturnToMainMenu
+            );
         }
     }
 
@@ -72,8 +130,12 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (!gameStarted || runHasEnded || runTimer == null)
+        if (!gameStarted ||
+            runHasEnded ||
+            runTimer == null)
+        {
             return;
+        }
 
         if (runTimer.ElapsedTime >= targetSurvivalTime)
             EndRun(true);
@@ -96,12 +158,39 @@ public class GameManager : MonoBehaviour
         if (runTimer != null)
             runTimer.StopTimer();
 
+        RecordProgress(playerWon);
         UpdateResultUI(playerWon);
 
         if (endPanel != null)
             endPanel.SetActive(true);
 
         Time.timeScale = 0f;
+    }
+
+    private void RecordProgress(bool playerWon)
+    {
+        float survivalTime = runTimer != null
+            ? runTimer.ElapsedTime
+            : 0f;
+
+        int reachedLevel = playerStats != null
+            ? playerStats.Level
+            : 1;
+
+        Debug.Log(
+    $"Recording Stage {currentStageId}: " +
+    $"won={playerWon}, " +
+    $"time={survivalTime:F2}, " +
+    $"level={reachedLevel}"
+);
+
+        LocalSaveSystem.RecordStageResult(
+            currentStageId,
+            playerWon,
+            survivalTime,
+            reachedLevel,
+            false
+        );
     }
 
     private void UpdateResultUI(bool playerWon)
@@ -113,14 +202,26 @@ public class GameManager : MonoBehaviour
             if (playerWon)
             {
                 resultTitleText.text = "VICTORY!";
+
                 resultTitleText.color =
-                    new Color32(255, 211, 78, 255);
+                    new Color32(
+                        255,
+                        211,
+                        78,
+                        255
+                    );
             }
             else
             {
                 resultTitleText.text = "GAME OVER";
+
                 resultTitleText.color =
-                    new Color32(255, 107, 107, 255);
+                    new Color32(
+                        255,
+                        107,
+                        107,
+                        255
+                    );
             }
         }
 
@@ -138,7 +239,8 @@ public class GameManager : MonoBehaviour
         if (resultStatsText != null)
         {
             resultStatsText.text =
-                $"Survival Time: {minutes:00}:{seconds:00}\n" +
+                $"Survival Time: " +
+                $"{minutes:00}:{seconds:00}\n" +
                 $"Level Reached: {reachedLevel}";
         }
     }
@@ -156,16 +258,20 @@ public class GameManager : MonoBehaviour
         if (resultWindowImage != null &&
             selectedWindowSprite != null)
         {
-            resultWindowImage.sprite = selectedWindowSprite;
+            resultWindowImage.sprite =
+                selectedWindowSprite;
         }
 
         if (resultIconImage != null &&
             selectedIconSprite != null)
         {
-            resultIconImage.sprite = selectedIconSprite;
+            resultIconImage.sprite =
+                selectedIconSprite;
+
             resultIconImage.preserveAspect = true;
         }
     }
+
 
     public void RestartGame()
     {
@@ -179,6 +285,7 @@ public class GameManager : MonoBehaviour
     public void ReturnToMainMenu()
     {
         Time.timeScale = 1f;
+
         SceneManager.LoadScene(mainMenuSceneName);
     }
 }

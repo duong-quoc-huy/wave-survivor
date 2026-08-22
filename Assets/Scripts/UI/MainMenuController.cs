@@ -4,12 +4,16 @@ using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
-    [Header("Scene")]
-    [SerializeField] private string gameSceneName = "GameScene";
+    [Header("Menu Buttons")]
+    [SerializeField]
+    private Button startButton;
 
-    [Header("Buttons")]
-    [SerializeField] private Button startButton;
-    [SerializeField] private Button quitButton;
+    [SerializeField]
+    private Button quitButton;
+
+    [Header("Scene Navigation")]
+    [SerializeField]
+    private string stageSelectSceneName = "StageSelectScene";
 
     private void Awake()
     {
@@ -28,13 +32,13 @@ public class MainMenuController : MonoBehaviour
         }
     }
 
-    private void StartGame()
+    public void StartGame()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(gameSceneName);
+        SceneManager.LoadScene(stageSelectSceneName);
     }
 
-    private void QuitGame()
+    public void QuitGame()
     {
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;

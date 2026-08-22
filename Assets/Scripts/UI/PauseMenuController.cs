@@ -6,11 +6,24 @@ using UnityEngine.UI;
 public class PauseMenuController : MonoBehaviour
 {
     [Header("Pause UI")]
-    [SerializeField] private GameObject pausePanel;
-    [SerializeField] private Button pauseButton;
-    [SerializeField] private Button resumeButton;
-    [SerializeField] private Button retryButton;
-    [SerializeField] private Button mainMenuButton;
+    [SerializeField]
+    private GameObject pausePanel;
+
+    [SerializeField]
+    private Button pauseButton;
+
+    [SerializeField]
+    private Button resumeButton;
+
+    [SerializeField]
+    private Button retryButton;
+
+    [SerializeField]
+    private Button mainMenuButton;
+
+    [Header("Confirmation UI")]
+    [SerializeField]
+    private ConfirmationDialog confirmationDialog;
 
     [Header("Scene Navigation")]
     [SerializeField]
@@ -24,6 +37,9 @@ public class PauseMenuController : MonoBehaviour
 
         if (pausePanel != null)
             pausePanel.SetActive(false);
+
+        if (confirmationDialog != null)
+            confirmationDialog.Hide();
 
         if (pauseButton != null)
         {
@@ -41,13 +57,17 @@ public class PauseMenuController : MonoBehaviour
         if (retryButton != null)
         {
             retryButton.onClick.RemoveAllListeners();
-            retryButton.onClick.AddListener(RetryGame);
+            retryButton.onClick.AddListener(
+                RequestRetry
+            );
         }
 
         if (mainMenuButton != null)
         {
             mainMenuButton.onClick.RemoveAllListeners();
-            mainMenuButton.onClick.AddListener(ReturnToMainMenu);
+            mainMenuButton.onClick.AddListener(
+                RequestMainMenu
+            );
         }
     }
 
@@ -56,6 +76,13 @@ public class PauseMenuController : MonoBehaviour
         if (Keyboard.current != null &&
             Keyboard.current.escapeKey.wasPressedThisFrame)
         {
+            if (confirmationDialog != null &&
+                confirmationDialog.IsOpen)
+            {
+                confirmationDialog.Cancel();
+                return;
+            }
+
             TogglePause();
         }
 
@@ -79,8 +106,8 @@ public class PauseMenuController : MonoBehaviour
 
     public void PauseGame()
     {
-        // Prevent Pause from opening while an upgrade
-        // or result screen has already paused the game.
+        // Do not open Pause while another screen,
+        // such as Level Up or End Panel, paused the game.
         if (isPaused || Time.timeScale <= 0f)
             return;
 
@@ -100,6 +127,12 @@ public class PauseMenuController : MonoBehaviour
         if (!isPaused)
             return;
 
+        if (confirmationDialog != null &&
+            confirmationDialog.IsOpen)
+        {
+            confirmationDialog.Hide();
+        }
+
         isPaused = false;
         Time.timeScale = 1f;
 
@@ -111,6 +144,56 @@ public class PauseMenuController : MonoBehaviour
             pauseButton.gameObject.SetActive(true);
             pauseButton.interactable = true;
         }
+    }
+
+    private void RequestRetry()
+    {
+        if (!isPaused)
+            return;
+
+        if (confirmationDialog == null)
+        {
+            Debug.LogError(
+                "PauseMenuController is missing " +
+                "its ConfirmationDialog reference.",
+                this
+            );
+
+            return;
+        }
+
+        confirmationDialog.Show(
+            "RESTART RUN?",
+            "Current run progress will be lost.\n" +
+            "Do you want to restart?",
+            "RESTART",
+            RetryGame
+        );
+    }
+
+    private void RequestMainMenu()
+    {
+        if (!isPaused)
+            return;
+
+        if (confirmationDialog == null)
+        {
+            Debug.LogError(
+                "PauseMenuController is missing " +
+                "its ConfirmationDialog reference.",
+                this
+            );
+
+            return;
+        }
+
+        confirmationDialog.Show(
+            "RETURN TO MAIN MENU?",
+            "Current run progress will be lost.\n" +
+            "Return to the Main Menu?",
+            "MAIN MENU",
+            ReturnToMainMenu
+        );
     }
 
     public void RetryGame()
