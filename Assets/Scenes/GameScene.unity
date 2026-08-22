@@ -718,6 +718,58 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 178801506}
   m_CullTransparentMesh: 1
+--- !u!1 &200674029
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 200674031}
+  - component: {fileID: 200674030}
+  m_Layer: 0
+  m_Name: StageRuntimeManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &200674030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 200674029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c4d1e0ceb336764f9e1f34335f7f921, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StageRuntimeConfigurator
+  stageConfigurations:
+  - {fileID: 11400000, guid: ff8985e220e65234baae92d5130b6b26, type: 2}
+  - {fileID: 11400000, guid: 4e254d9c14ebc1e479be7db84f9c61ed, type: 2}
+  - {fileID: 11400000, guid: fb328f0df76a65e47b52e5f5cb4a7ae2, type: 2}
+  - {fileID: 11400000, guid: 7ea0ba326cbd2074e826e2fba9e57fa4, type: 2}
+  - {fileID: 11400000, guid: 9614169503ccd914e9f0ad5636ac86a5, type: 2}
+  gameManager: {fileID: 1718626379}
+  enemySpawner: {fileID: 538337095}
+--- !u!4 &200674031
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 200674029}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.50374, y: -0.538, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &241898644
 GameObject:
   m_ObjectHideFlags: 0
@@ -15554,3 +15606,4 @@ SceneRoots:
   - {fileID: 1402471872}
   - {fileID: 1151399094}
   - {fileID: 800564281}
+  - {fileID: 200674031}

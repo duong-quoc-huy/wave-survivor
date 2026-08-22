@@ -272,6 +272,31 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ConfigureStage(StageConfiguration configuration)
+    {
+        if (configuration == null)
+        {
+            Debug.LogError(
+                "GameManager received a null stage configuration.",
+                this
+            );
+
+            return;
+        }
+
+        currentStageId = configuration.StageId;
+        targetSurvivalTime =
+            configuration.SurvivalTime;
+
+        Debug.Log(
+            $"GameManager configured for Stage " +
+            $"{currentStageId}: " +
+            $"{configuration.StageName}. " +
+            $"Survival time: " +
+            $"{targetSurvivalTime} seconds."
+        );
+    }
+
 
     public void RestartGame()
     {

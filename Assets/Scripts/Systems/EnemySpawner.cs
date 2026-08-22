@@ -185,6 +185,57 @@ public class EnemySpawner : MonoBehaviour
         );
     }
 
+    public void ConfigureStage(
+    StageConfiguration configuration
+)
+    {
+        if (configuration == null)
+        {
+            Debug.LogError(
+                "EnemySpawner received a null " +
+                "stage configuration.",
+                this
+            );
+
+            return;
+        }
+
+        arenaHalfSize =
+            configuration.ArenaHalfSize;
+
+        startDelay =
+            configuration.StartDelay;
+
+        initialSpawnInterval =
+            configuration.InitialSpawnInterval;
+
+        minimumSpawnInterval =
+            configuration.MinimumSpawnInterval;
+
+        intervalDecreasePerMinute =
+            configuration.IntervalDecreasePerMinute;
+
+        maxActiveEnemies =
+            configuration.MaxActiveEnemies;
+
+        spiderUnlockTime =
+            configuration.SpiderUnlockTime;
+
+        spiderSpawnChance =
+            configuration.SpiderSpawnChance;
+
+        elapsedTime = 0f;
+
+        Debug.Log(
+            $"EnemySpawner configured for Stage " +
+            $"{configuration.StageId}. " +
+            $"Initial interval: " +
+            $"{initialSpawnInterval:F2}, " +
+            $"spider chance: " +
+            $"{spiderSpawnChance:F2}."
+        );
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.cyan;
