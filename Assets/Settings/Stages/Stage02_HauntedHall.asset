@@ -16,7 +16,7 @@ MonoBehaviour:
   stageName: HAUNTED HALL
   survivalTime: 300
   arenaHalfSize: {x: 14, y: 9}
-  overrideArenaVisuals: 0
+  overrideArenaVisuals: 1
   floorBaseTile: {fileID: 11400000, guid: ac12acd3d38096441ae2d390366f9def, type: 2}
   floorVariationTiles:
   - {fileID: 11400000, guid: ffabdf18910c1e04ba983e3b50576b06, type: 2}
@@ -25,7 +25,7 @@ MonoBehaviour:
   floorVariationChance: 0.12
   floorRandomSeed: 2202
   floorTint: {r: 1, g: 1, b: 1, a: 1}
-  overrideArenaDecorations: 0
+  overrideArenaDecorations: 1
   arenaDecorationTiles:
   - {fileID: 11400000, guid: 7a0e16bb2c192ef448db50a662219ba4, type: 2}
   - {fileID: 11400000, guid: cd327ebb3fb8e3640b4e4c5d52a195d1, type: 2}

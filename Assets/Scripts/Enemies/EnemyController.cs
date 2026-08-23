@@ -11,6 +11,7 @@ public class EnemyController : MonoBehaviour
 
     private Rigidbody2D body;
     private Transform target;
+    private float speedMultiplier = 1f;
 
     private void Awake()
     {
@@ -46,7 +47,7 @@ public class EnemyController : MonoBehaviour
         Vector2 nextPosition = Vector2.MoveTowards(
             body.position,
             target.position,
-            moveSpeed * Time.fixedDeltaTime
+            moveSpeed * speedMultiplier * Time.fixedDeltaTime
         );
 
         body.MovePosition(nextPosition);
@@ -63,11 +64,22 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    public void SetSpeedMultiplier(float multiplier)
+    {
+        speedMultiplier = Mathf.Max(0f, multiplier);
+    }
+
+    public void ResetSpeedMultiplier()
+    {
+        speedMultiplier = 1f;
+    }
+
+
     private void OnDisable()
     {
+        speedMultiplier = 1f;
+
         if (body != null)
-        {
             body.linearVelocity = Vector2.zero;
-        }
     }
 }

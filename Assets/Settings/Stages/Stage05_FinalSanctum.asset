@@ -14,14 +14,45 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StageConfiguration
   stageId: 5
   stageName: FINAL SANCTUM
-  survivalTime: 15
+  survivalTime: 45
   arenaHalfSize: {x: 14, y: 9}
+  overrideArenaVisuals: 1
+  floorBaseTile: {fileID: 11400000, guid: 4f5295cd89988ea468c3983b46e98de2, type: 2}
+  floorVariationTiles:
+  - {fileID: 11400000, guid: 0c047fb848f2c9748b1bc67b8cbbabd1, type: 2}
+  - {fileID: 11400000, guid: 285c41e829364454bb299ec7f2c0ca19, type: 2}
+  - {fileID: 11400000, guid: c5292a81bb8f86141af57a16e2ce2094, type: 2}
+  floorBorderTile: {fileID: 11400000, guid: 3cf68b07d6cb34e4195f21cd289c2076, type: 2}
+  floorVariationChance: 0.1
+  floorRandomSeed: 50505
+  floorTint: {r: 0.6627451, g: 0.6039216, b: 0.6666667, a: 1}
+  overrideArenaDecorations: 1
+  arenaDecorationTiles:
+  - {fileID: 11400000, guid: e39461bd5f9b10a4bad841c5c28aa52b, type: 2}
+  - {fileID: 11400000, guid: 2a401f3d0e0b5e14cb1e859c34e9c36e, type: 2}
+  - {fileID: 11400000, guid: 20e3685ff1a7186449805912a9630863, type: 2}
+  - {fileID: 11400000, guid: 4082390f4b06eb1459aad2e156d1eace, type: 2}
+  - {fileID: 11400000, guid: f7b65ef267643974f92bfc56a18f659d, type: 2}
+  - {fileID: 11400000, guid: 68b8a343aac7b5f4aab5f6b39bb3f1b7, type: 2}
+  arenaDecorationCount: 10
+  decorationEdgeInset: 2
+  decorationRandomSeed: 55005
+  enemyRoster:
+  - enemyPrefab: {fileID: 8836366788305692468, guid: 4f1bdf0828c830f4bb69fd4c13a3310e, type: 3}
+    unlockTime: 0
+    spawnWeight: 40
+  - enemyPrefab: {fileID: 8836366788305692468, guid: 72a7e4a9f88d67d4db2b9abab7908a16, type: 3}
+    unlockTime: 0
+    spawnWeight: 50
+  - enemyPrefab: {fileID: 8836366788305692468, guid: 4b7a56e1d46aa2640b8a1321a13b767c, type: 3}
+    unlockTime: 0
+    spawnWeight: 30
   startDelay: 1
-  initialSpawnInterval: 2
-  minimumSpawnInterval: 0.75
+  initialSpawnInterval: 1.3
+  minimumSpawnInterval: 0.45
   intervalDecreasePerMinute: 0.25
   maxActiveEnemies: 60
   spiderUnlockTime: 60
   spiderSpawnChance: 0.35
-  bossStage: 0
-  bossSpawnTime: 240
+  bossStage: 1
+  bossSpawnTime: 15

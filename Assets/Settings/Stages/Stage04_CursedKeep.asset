@@ -16,18 +16,26 @@ MonoBehaviour:
   stageName: CURSED KEEP
   survivalTime: 15
   arenaHalfSize: {x: 14, y: 9}
-  overrideArenaVisuals: 0
-  floorBaseTile: {fileID: 0}
-  floorVariationTiles: []
-  floorBorderTile: {fileID: 0}
+  overrideArenaVisuals: 1
+  floorBaseTile: {fileID: 11400000, guid: dc73efacbb859d64985ab799ff522d24, type: 2}
+  floorVariationTiles:
+  - {fileID: 11400000, guid: df500c76c2ac1d247995dd528870dd9c, type: 2}
+  - {fileID: 11400000, guid: d7fe4e3150888b64191aa2da3351444a, type: 2}
+  - {fileID: 11400000, guid: 7d785e9dbf3e8b34bb8651754ac93768, type: 2}
+  floorBorderTile: {fileID: 11400000, guid: 8c06bca483ba5eb4c83ff0ed649c21d6, type: 2}
   floorVariationChance: 0.12
-  floorRandomSeed: 12345
-  floorTint: {r: 1, g: 1, b: 1, a: 1}
-  overrideArenaDecorations: 0
-  arenaDecorationTiles: []
-  arenaDecorationCount: 12
-  decorationEdgeInset: 1
-  decorationRandomSeed: 54321
+  floorRandomSeed: 40404
+  floorTint: {r: 0.53333336, g: 0.5882353, b: 0.6666667, a: 1}
+  overrideArenaDecorations: 1
+  arenaDecorationTiles:
+  - {fileID: 11400000, guid: bdb58491ff6cb0c4983c4833f15ef1be, type: 2}
+  - {fileID: 11400000, guid: 0a178dedb5633a5459598fe79e916c42, type: 2}
+  - {fileID: 11400000, guid: 5e4eeccb772188f459e3b479d350d16a, type: 2}
+  - {fileID: 11400000, guid: 7c31a59222800824fab6c33ff83130e9, type: 2}
+  - {fileID: 11400000, guid: 26ad549ace9a3d240b3e41fb19ce27eb, type: 2}
+  arenaDecorationCount: 10
+  decorationEdgeInset: 2
+  decorationRandomSeed: 44004
   enemyRoster:
   - enemyPrefab: {fileID: 8836366788305692468, guid: 4f1bdf0828c830f4bb69fd4c13a3310e, type: 3}
     unlockTime: 0
