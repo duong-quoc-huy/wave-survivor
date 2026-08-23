@@ -16,6 +16,30 @@ MonoBehaviour:
   stageName: HAUNTED HALL
   survivalTime: 300
   arenaHalfSize: {x: 14, y: 9}
+  overrideArenaVisuals: 0
+  floorBaseTile: {fileID: 11400000, guid: ac12acd3d38096441ae2d390366f9def, type: 2}
+  floorVariationTiles:
+  - {fileID: 11400000, guid: ffabdf18910c1e04ba983e3b50576b06, type: 2}
+  - {fileID: 11400000, guid: 44d8d4c8aaf5fee44a63a3db478e7f40, type: 2}
+  floorBorderTile: {fileID: 0}
+  floorVariationChance: 0.12
+  floorRandomSeed: 2202
+  floorTint: {r: 1, g: 1, b: 1, a: 1}
+  overrideArenaDecorations: 0
+  arenaDecorationTiles:
+  - {fileID: 11400000, guid: 7a0e16bb2c192ef448db50a662219ba4, type: 2}
+  - {fileID: 11400000, guid: cd327ebb3fb8e3640b4e4c5d52a195d1, type: 2}
+  - {fileID: 11400000, guid: 7d056e39b9a0c9341af8c9a2efd67fd5, type: 2}
+  arenaDecorationCount: 12
+  decorationEdgeInset: 2
+  decorationRandomSeed: 2203
+  enemyRoster:
+  - enemyPrefab: {fileID: 8836366788305692468, guid: 04cb88da1eaeacc42b741860754ab4b4, type: 3}
+    unlockTime: 0
+    spawnWeight: 70
+  - enemyPrefab: {fileID: 8836366788305692468, guid: 72a7e4a9f88d67d4db2b9abab7908a16, type: 3}
+    unlockTime: 0
+    spawnWeight: 30
   startDelay: 1
   initialSpawnInterval: 2
   minimumSpawnInterval: 0.75

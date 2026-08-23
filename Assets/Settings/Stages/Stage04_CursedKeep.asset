@@ -16,6 +16,25 @@ MonoBehaviour:
   stageName: CURSED KEEP
   survivalTime: 15
   arenaHalfSize: {x: 14, y: 9}
+  overrideArenaVisuals: 0
+  floorBaseTile: {fileID: 0}
+  floorVariationTiles: []
+  floorBorderTile: {fileID: 0}
+  floorVariationChance: 0.12
+  floorRandomSeed: 12345
+  floorTint: {r: 1, g: 1, b: 1, a: 1}
+  overrideArenaDecorations: 0
+  arenaDecorationTiles: []
+  arenaDecorationCount: 12
+  decorationEdgeInset: 1
+  decorationRandomSeed: 54321
+  enemyRoster:
+  - enemyPrefab: {fileID: 8836366788305692468, guid: 4f1bdf0828c830f4bb69fd4c13a3310e, type: 3}
+    unlockTime: 0
+    spawnWeight: 50
+  - enemyPrefab: {fileID: 8836366788305692468, guid: 4b7a56e1d46aa2640b8a1321a13b767c, type: 3}
+    unlockTime: 3
+    spawnWeight: 50
   startDelay: 1
   initialSpawnInterval: 2
   minimumSpawnInterval: 0.75

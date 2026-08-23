@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [Header("Enemy Prefabs")]
+    [Header("Legacy Enemy Prefabs")]
     [SerializeField]
     private EnemyHealth ghostPrefab;
 
@@ -14,7 +14,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField]
     private Transform enemyParent;
 
-    [Header("Spider Unlock")]
+    [Header("Legacy Spider Unlock")]
     [SerializeField, Min(0f)]
     private float spiderUnlockTime = 60f;
 
@@ -46,7 +46,12 @@ public class EnemySpawner : MonoBehaviour
     private readonly List<EnemyHealth> activeEnemies =
         new List<EnemyHealth>();
 
+    private StageEnemyEntry[] configuredEnemyRoster;
     private float elapsedTime;
+
+    private bool HasConfiguredRoster =>
+        configuredEnemyRoster != null &&
+        configuredEnemyRoster.Length > 0;
 
     private void Update()
     {
@@ -79,11 +84,14 @@ public class EnemySpawner : MonoBehaviour
 
         if (selectedPrefab == null)
         {
-            Debug.LogError(
-                "EnemySpawner is missing an enemy prefab.",
-                this
-            );
+            string message = HasConfiguredRoster
+                ? "The stage enemy roster has no eligible " +
+                  "enemy. Ensure at least one entry has an " +
+                  "Unlock Time of 0, a Spawn Weight above 0, " +
+                  "and an assigned enemy prefab."
+                : "EnemySpawner is missing an enemy prefab.";
 
+            Debug.LogError(message, this);
             return;
         }
 
@@ -102,6 +110,16 @@ public class EnemySpawner : MonoBehaviour
 
     private EnemyHealth SelectEnemyPrefab()
     {
+        if (HasConfiguredRoster)
+        {
+            return SelectEnemyFromRoster();
+        }
+
+        return SelectLegacyEnemyPrefab();
+    }
+
+    private EnemyHealth SelectLegacyEnemyPrefab()
+    {
         bool spiderIsUnlocked =
             elapsedTime >= spiderUnlockTime;
 
@@ -116,6 +134,63 @@ public class EnemySpawner : MonoBehaviour
         }
 
         return ghostPrefab;
+    }
+
+    private EnemyHealth SelectEnemyFromRoster()
+    {
+        float totalWeight = 0f;
+
+        for (int index = 0;
+             index < configuredEnemyRoster.Length;
+             index++)
+        {
+            StageEnemyEntry entry =
+                configuredEnemyRoster[index];
+
+            if (!IsEntryEligible(entry))
+                continue;
+
+            totalWeight += entry.SpawnWeight;
+        }
+
+        if (totalWeight <= 0f)
+            return null;
+
+        float randomValue =
+            Random.Range(0f, totalWeight);
+
+        EnemyHealth lastEligiblePrefab = null;
+
+        for (int index = 0;
+             index < configuredEnemyRoster.Length;
+             index++)
+        {
+            StageEnemyEntry entry =
+                configuredEnemyRoster[index];
+
+            if (!IsEntryEligible(entry))
+                continue;
+
+            lastEligiblePrefab = entry.EnemyPrefab;
+            randomValue -= entry.SpawnWeight;
+
+            if (randomValue <= 0f)
+            {
+                return entry.EnemyPrefab;
+            }
+        }
+
+        return lastEligiblePrefab;
+    }
+
+    private bool IsEntryEligible(
+        StageEnemyEntry entry
+    )
+    {
+        return entry != null &&
+               entry.EnemyPrefab != null &&
+               entry.SpawnWeight > 0f &&
+               elapsedTime >= entry.UnlockTime;
     }
 
     private Vector2 GetRandomArenaEdgePosition()
@@ -165,7 +240,8 @@ public class EnemySpawner : MonoBehaviour
 
     private float GetCurrentSpawnInterval()
     {
-        float elapsedMinutes = elapsedTime / 60f;
+        float elapsedMinutes =
+            elapsedTime / 60f;
 
         float currentInterval =
             initialSpawnInterval -
@@ -186,8 +262,8 @@ public class EnemySpawner : MonoBehaviour
     }
 
     public void ConfigureStage(
-    StageConfiguration configuration
-)
+        StageConfiguration configuration
+    )
     {
         if (configuration == null)
         {
@@ -224,15 +300,22 @@ public class EnemySpawner : MonoBehaviour
         spiderSpawnChance =
             configuration.SpiderSpawnChance;
 
+        configuredEnemyRoster =
+            configuration.EnemyRoster;
+
         elapsedTime = 0f;
+
+        string rosterDescription =
+            HasConfiguredRoster
+                ? $"{configuredEnemyRoster.Length} roster entries"
+                : "legacy Ghost/Spider configuration";
 
         Debug.Log(
             $"EnemySpawner configured for Stage " +
             $"{configuration.StageId}. " +
+            $"Using {rosterDescription}. " +
             $"Initial interval: " +
-            $"{initialSpawnInterval:F2}, " +
-            $"spider chance: " +
-            $"{spiderSpawnChance:F2}."
+            $"{initialSpawnInterval:F2}."
         );
     }
 

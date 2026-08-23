@@ -21,54 +21,43 @@ public class ArenaFloorGenerator : MonoBehaviour
     [SerializeField, Min(1)]
     private int height = 20;
 
-    [Header("Floor Appearance")]
-    [SerializeField]
-    private Color tilemapTint = Color.white;
-
+    [Header("Floor Variation")]
     [SerializeField, Range(0f, 1f)]
     private float variationChance = 0.08f;
 
     [SerializeField]
     private int randomSeed = 12345;
 
-    public void ConfigureTheme(
-        TileBase newBaseTile,
-        TileBase newVariationTile,
-        TileBase newBorderTile,
-        Color newTint,
-        float newVariationChance,
-        int newRandomSeed
-    )
+    private TileBase[] runtimeVariationTiles;
+
+    public void ConfigureStage(StageConfiguration configuration)
     {
-        // Missing visual fields safely keep the scene defaults while
-        // stage assets are being configured one at a time.
-        if (newBaseTile != null)
-            baseTile = newBaseTile;
+        if (configuration == null ||
+            !configuration.OverrideArenaVisuals)
+        {
+            return;
+        }
 
-        variationTile = newVariationTile;
+        if (configuration.FloorBaseTile != null)
+            baseTile = configuration.FloorBaseTile;
 
-        if (newBorderTile != null)
-            borderTile = newBorderTile;
+        runtimeVariationTiles =
+            configuration.FloorVariationTiles;
 
-        tilemapTint = newTint;
-        variationChance = Mathf.Clamp01(
-            newVariationChance
-        );
-        randomSeed = newRandomSeed;
-    }
+        // A null stage border intentionally keeps the border already
+        // configured on this generator.
+        if (configuration.FloorBorderTile != null)
+            borderTile = configuration.FloorBorderTile;
 
-    public void ConfigureSize(Vector2 arenaHalfSize)
-    {
-        // The playable arena is inset by one tile on each side.
-        width = Mathf.Max(
-            1,
-            Mathf.RoundToInt(arenaHalfSize.x * 2f) + 2
-        );
+        variationChance =
+            configuration.FloorVariationChance;
 
-        height = Mathf.Max(
-            1,
-            Mathf.RoundToInt(arenaHalfSize.y * 2f) + 2
-        );
+        randomSeed = configuration.FloorRandomSeed;
+
+        Tilemap tilemap = GetComponent<Tilemap>();
+        tilemap.color = configuration.FloorTint;
+
+        GenerateFloor();
     }
 
     [ContextMenu("Generate Floor")]
@@ -82,10 +71,10 @@ public class ArenaFloorGenerator : MonoBehaviour
                 "ArenaFloorGenerator requires a Base Tile.",
                 this
             );
+
             return;
         }
 
-        tilemap.color = tilemapTint;
         tilemap.ClearAllTiles();
 
         int startX = -(width / 2);
@@ -93,6 +82,7 @@ public class ArenaFloorGenerator : MonoBehaviour
 
         GenerateBorder(tilemap, startX, startY);
         GenerateFloorTiles(tilemap, startX, startY);
+
         tilemap.CompressBounds();
     }
 
@@ -147,13 +137,16 @@ public class ArenaFloorGenerator : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                bool useVariation =
-                    variationTile != null &&
-                    random.NextDouble() < variationChance;
+                TileBase selectedTile = baseTile;
 
-                TileBase selectedTile = useVariation
-                    ? variationTile
-                    : baseTile;
+                if (random.NextDouble() < variationChance)
+                {
+                    TileBase selectedVariation =
+                        GetRandomVariation(random);
+
+                    if (selectedVariation != null)
+                        selectedTile = selectedVariation;
+                }
 
                 Vector3Int position = new Vector3Int(
                     startX + x,
@@ -164,5 +157,34 @@ public class ArenaFloorGenerator : MonoBehaviour
                 tilemap.SetTile(position, selectedTile);
             }
         }
+    }
+
+    private TileBase GetRandomVariation(
+        System.Random random
+    )
+    {
+        if (runtimeVariationTiles != null &&
+            runtimeVariationTiles.Length > 0)
+        {
+            int startIndex = random.Next(
+                runtimeVariationTiles.Length
+            );
+
+            for (
+                int offset = 0;
+                offset < runtimeVariationTiles.Length;
+                offset++
+            )
+            {
+                int index =
+                    (startIndex + offset) %
+                    runtimeVariationTiles.Length;
+
+                if (runtimeVariationTiles[index] != null)
+                    return runtimeVariationTiles[index];
+            }
+        }
+
+        return variationTile;
     }
 }

@@ -16,6 +16,33 @@ MonoBehaviour:
   stageName: SPIDER NEST
   survivalTime: 15
   arenaHalfSize: {x: 14, y: 9}
+  overrideArenaVisuals: 1
+  floorBaseTile: {fileID: 11400000, guid: 30760edd3b8fce74e8281180fe9f40e8, type: 2}
+  floorVariationTiles:
+  - {fileID: 11400000, guid: 771ecf0ae4f81a5408c2a4deb9c6a113, type: 2}
+  - {fileID: 11400000, guid: 2f29f452ad8b67e40a34dd51ae619da0, type: 2}
+  floorBorderTile: {fileID: 11400000, guid: 1e6b300ad7c3fdf4293bd8c8fe88a066, type: 2}
+  floorVariationChance: 0.18
+  floorRandomSeed: 30303
+  floorTint: {r: 0.84313726, g: 0.78039217, b: 0.8901961, a: 1}
+  overrideArenaDecorations: 1
+  arenaDecorationTiles:
+  - {fileID: 11400000, guid: 8965b65d310471541b310cd149938b80, type: 2}
+  - {fileID: 11400000, guid: de2423bba7c22624d956ab437d0195c1, type: 2}
+  - {fileID: 11400000, guid: c1088fb113282f54cbbe65d29995f9d6, type: 2}
+  - {fileID: 11400000, guid: 03c9dba534c3157428a4531cce0bd5d7, type: 2}
+  - {fileID: 11400000, guid: b3d6ea150fac7594d96d960196701789, type: 2}
+  - {fileID: 11400000, guid: 55c5360c88fe9a240ae2db60710e4a5d, type: 2}
+  arenaDecorationCount: 8
+  decorationEdgeInset: 2
+  decorationRandomSeed: 33003
+  enemyRoster:
+  - enemyPrefab: {fileID: 8836366788305692468, guid: 624d19da1e7196d4488c4db830c19b83, type: 3}
+    unlockTime: 0
+    spawnWeight: 50
+  - enemyPrefab: {fileID: 8836366788305692468, guid: 954feb2790c546345a51c8180b4d02b0, type: 3}
+    unlockTime: 3
+    spawnWeight: 50
   startDelay: 1
   initialSpawnInterval: 1
   minimumSpawnInterval: 0.5

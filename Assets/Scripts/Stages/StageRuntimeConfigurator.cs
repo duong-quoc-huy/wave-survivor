@@ -6,16 +6,18 @@ public class StageRuntimeConfigurator : MonoBehaviour
     [SerializeField]
     private StageConfiguration[] stageConfigurations;
 
-    [Header("Gameplay References")]
-    [SerializeField] private GameManager gameManager;
-    [SerializeField] private EnemySpawner enemySpawner;
-
-    [Header("Arena Visual References")]
+    [Header("Game References")]
     [SerializeField]
-    private ArenaFloorGenerator floorGenerator;
+    private GameManager gameManager;
 
     [SerializeField]
-    private ArenaDecorationGenerator decorationGenerator;
+    private EnemySpawner enemySpawner;
+
+    [SerializeField]
+    private ArenaFloorGenerator arenaFloorGenerator;
+
+    [SerializeField]
+    private ArenaDecorationGenerator arenaDecorationGenerator;
 
     private void Awake()
     {
@@ -26,9 +28,7 @@ public class StageRuntimeConfigurator : MonoBehaviour
     {
         int selectedStageId = StageRunContext.SelectedStageId;
 
-        if (!LocalSaveSystem.IsStageUnlocked(
-                selectedStageId
-            ))
+        if (!LocalSaveSystem.IsStageUnlocked(selectedStageId))
         {
             Debug.LogWarning(
                 $"Stage {selectedStageId} is locked. " +
@@ -50,20 +50,10 @@ public class StageRuntimeConfigurator : MonoBehaviour
                 $"Stage {selectedStageId}.",
                 this
             );
+
             return;
         }
 
-        ApplyGameplayConfiguration(configuration);
-        ApplyArenaVisuals(configuration);
-
-        Debug.Log(
-            $"Applied Stage {configuration.StageId}: " +
-            $"{configuration.StageName}."
-        );
-    }
-
-    private void ApplyGameplayConfiguration(StageConfiguration configuration)
-    {
         if (gameManager != null)
             gameManager.ConfigureStage(configuration);
         else
@@ -81,55 +71,33 @@ public class StageRuntimeConfigurator : MonoBehaviour
                 "the EnemySpawner reference.",
                 this
             );
-    }
 
-    private void ApplyArenaVisuals(StageConfiguration configuration)
-    {
-        if (floorGenerator != null)
+        if (arenaFloorGenerator != null)
+            arenaFloorGenerator.ConfigureStage(configuration);
+        else if (configuration.OverrideArenaVisuals)
+            Debug.LogError(
+                "StageRuntimeConfigurator is missing " +
+                "the ArenaFloorGenerator reference.",
+                this
+            );
+
+        if (arenaDecorationGenerator != null)
         {
-            floorGenerator.ConfigureTheme(
-                configuration.FloorBaseTile,
-                configuration.FloorVariationTile,
-                configuration.FloorBorderTile,
-                configuration.FloorTint,
-                configuration.FloorVariationChance,
-                configuration.VisualRandomSeed
-            );
-
-            floorGenerator.ConfigureSize(
-                configuration.ArenaHalfSize
-            );
-
-            floorGenerator.GenerateFloor();
+            arenaDecorationGenerator.ConfigureStage(configuration);
         }
-        else
+        else if (configuration.OverrideArenaDecorations)
         {
-            Debug.LogWarning(
-                "StageRuntimeConfigurator has no " +
-                "ArenaFloorGenerator reference.",
+            Debug.LogError(
+                "StageRuntimeConfigurator is missing " +
+                "the ArenaDecorationGenerator reference.",
                 this
             );
         }
 
-        if (decorationGenerator != null)
-        {
-            decorationGenerator.ConfigureTheme(
-                configuration.DecorationTileA,
-                configuration.DecorationTileB,
-                configuration.DecorationTileC,
-                configuration.DecorationTint
-            );
-
-            decorationGenerator.GenerateDecorations();
-        }
-        else
-        {
-            Debug.LogWarning(
-                "StageRuntimeConfigurator has no " +
-                "ArenaDecorationGenerator reference.",
-                this
-            );
-        }
+        Debug.Log(
+            $"Applied Stage {configuration.StageId}: " +
+            $"{configuration.StageName}."
+        );
     }
 
     private StageConfiguration FindConfiguration(int stageId)
@@ -137,9 +105,13 @@ public class StageRuntimeConfigurator : MonoBehaviour
         if (stageConfigurations == null)
             return null;
 
-        foreach (StageConfiguration configuration in stageConfigurations)
+        foreach (
+            StageConfiguration configuration
+            in stageConfigurations
+        )
         {
-            if (configuration != null && configuration.StageId == stageId)
+            if (configuration != null &&
+                configuration.StageId == stageId)
             {
                 return configuration;
             }
