@@ -108,6 +108,9 @@ public class StageConfiguration : ScriptableObject
     [SerializeField]
     private bool bossStage;
 
+    [SerializeField]
+    private EnemyHealth bossPrefab;
+
     [SerializeField, Min(0f)]
     private float bossSpawnTime = 240f;
 
@@ -143,6 +146,7 @@ public class StageConfiguration : ScriptableObject
     public float SpiderUnlockTime => spiderUnlockTime;
     public float SpiderSpawnChance => spiderSpawnChance;
     public bool BossStage => bossStage;
+    public EnemyHealth BossPrefab => bossPrefab;
     public float BossSpawnTime => bossSpawnTime;
     public StageEnemyEntry[] EnemyRoster => enemyRoster;
 }

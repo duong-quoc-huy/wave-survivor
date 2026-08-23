@@ -43,19 +43,41 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField, Min(1)]
     private int maxActiveEnemies = 60;
 
-    private readonly List<EnemyHealth> activeEnemies =
-        new List<EnemyHealth>();
+    private readonly List<EnemyHealth> activeEnemies = new List<EnemyHealth>();
 
     private StageEnemyEntry[] configuredEnemyRoster;
     private float elapsedTime;
 
-    private bool HasConfiguredRoster =>
-        configuredEnemyRoster != null &&
-        configuredEnemyRoster.Length > 0;
+    private bool HasConfiguredRoster => configuredEnemyRoster != null && configuredEnemyRoster.Length > 0;
+    private bool bossStage;
+    private EnemyHealth bossPrefab;
+    private float bossSpawnTime;
+    private bool bossHasSpawned;
 
     private void Update()
     {
         elapsedTime += Time.deltaTime;
+
+        if (bossStage && !bossHasSpawned && bossPrefab != null && elapsedTime >= bossSpawnTime)
+        {
+            SpawnBoss();
+        }
+    }
+
+    private void SpawnBoss()
+    {
+        bossHasSpawned = true;
+        Vector2 spawnPosition = GetRandomArenaEdgePosition();
+
+        EnemyHealth boss = Instantiate(
+            bossPrefab,
+            spawnPosition,
+            Quaternion.identity,
+            enemyParent
+        );
+
+        activeEnemies.Add(boss);
+        Debug.Log("Boss Has Spawned!");
     }
 
     private IEnumerator Start()
@@ -261,9 +283,7 @@ public class EnemySpawner : MonoBehaviour
         );
     }
 
-    public void ConfigureStage(
-        StageConfiguration configuration
-    )
+    public void ConfigureStage(StageConfiguration configuration)
     {
         if (configuration == null)
         {
@@ -276,32 +296,28 @@ public class EnemySpawner : MonoBehaviour
             return;
         }
 
-        arenaHalfSize =
-            configuration.ArenaHalfSize;
+        arenaHalfSize = configuration.ArenaHalfSize;
 
-        startDelay =
-            configuration.StartDelay;
+        startDelay = configuration.StartDelay;
 
-        initialSpawnInterval =
-            configuration.InitialSpawnInterval;
+        initialSpawnInterval = configuration.InitialSpawnInterval;
 
-        minimumSpawnInterval =
-            configuration.MinimumSpawnInterval;
+        minimumSpawnInterval = configuration.MinimumSpawnInterval;
 
-        intervalDecreasePerMinute =
-            configuration.IntervalDecreasePerMinute;
+        intervalDecreasePerMinute = configuration.IntervalDecreasePerMinute;
 
-        maxActiveEnemies =
-            configuration.MaxActiveEnemies;
+        maxActiveEnemies = configuration.MaxActiveEnemies;
 
-        spiderUnlockTime =
-            configuration.SpiderUnlockTime;
+        spiderUnlockTime = configuration.SpiderUnlockTime;
 
-        spiderSpawnChance =
-            configuration.SpiderSpawnChance;
+        spiderSpawnChance = configuration.SpiderSpawnChance;
 
-        configuredEnemyRoster =
-            configuration.EnemyRoster;
+        configuredEnemyRoster = configuration.EnemyRoster;
+
+        bossStage = configuration.BossStage;
+        bossPrefab = configuration.BossPrefab; 
+        bossSpawnTime = configuration.BossSpawnTime;
+        bossHasSpawned = false;
 
         elapsedTime = 0f;
 

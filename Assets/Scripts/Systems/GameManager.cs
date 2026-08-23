@@ -313,4 +313,20 @@ public class GameManager : MonoBehaviour
 
         SceneManager.LoadScene(mainMenuSceneName);
     }
+
+    public void BindPlayerReferences(GameObject player)
+    {
+        if (player == null) return;
+
+        playerHealth = player.GetComponent<PlayerHealth>();
+        playerStats = player.GetComponent<PlayerStats>();
+
+        if (playerHealth != null)
+        {
+            playerHealth.Died -= HandlePlayerDeath;
+            playerHealth.Died += HandlePlayerDeath;
+        }
+
+        Debug.Log("GameManager successfully bound to spawned player.", this);
+    }
 }

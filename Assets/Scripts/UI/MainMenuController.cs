@@ -13,7 +13,7 @@ public class MainMenuController : MonoBehaviour
 
     [Header("Scene Navigation")]
     [SerializeField]
-    private string stageSelectSceneName = "StageSelectScene";
+    private string characterSelectionSceneName = "CharacterSelectionScene";
 
     private void Awake()
     {
@@ -35,7 +35,7 @@ public class MainMenuController : MonoBehaviour
     public void StartGame()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(stageSelectSceneName);
+        SceneManager.LoadScene(characterSelectionSceneName);
     }
 
     public void QuitGame()
