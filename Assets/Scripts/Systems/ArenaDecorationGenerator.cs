@@ -1,36 +1,68 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
 [RequireComponent(typeof(Tilemap))]
 public class ArenaDecorationGenerator : MonoBehaviour
 {
     [Header("Decoration Tiles")]
-    [SerializeField] private TileBase crateTile;
-    [SerializeField] private TileBase tombstoneTile;
-    [SerializeField] private TileBase barrelTile;
+    [FormerlySerializedAs("crateTile")]
+    [SerializeField] private TileBase decorationTileA;
+
+    [FormerlySerializedAs("tombstoneTile")]
+    [SerializeField] private TileBase decorationTileB;
+
+    [FormerlySerializedAs("barrelTile")]
+    [SerializeField] private TileBase decorationTileC;
+
+    [Header("Decoration Appearance")]
+    [SerializeField]
+    private Color decorationTint = Color.white;
+
+    public void ConfigureTheme(
+        TileBase newTileA,
+        TileBase newTileB,
+        TileBase newTileC,
+        Color newTint
+    )
+    {
+        // Keep current scene values if a stage asset has not been
+        // visually configured yet.
+        if (newTileA != null)
+            decorationTileA = newTileA;
+
+        if (newTileB != null)
+            decorationTileB = newTileB;
+
+        if (newTileC != null)
+            decorationTileC = newTileC;
+
+        decorationTint = newTint;
+    }
 
     [ContextMenu("Generate Decorations")]
-    private void GenerateDecorations()
+    public void GenerateDecorations()
     {
         Tilemap tilemap = GetComponent<Tilemap>();
 
+        tilemap.color = decorationTint;
         tilemap.ClearAllTiles();
 
         // Decorations along the top border.
-        PlaceTile(tilemap, crateTile, -10, 10);
-        PlaceTile(tilemap, tombstoneTile, 0, 10);
-        PlaceTile(tilemap, barrelTile, 9, 10);
-        PlaceTile(tilemap, tombstoneTile, 12, 10);
+        PlaceTile(tilemap, decorationTileA, -10, 10);
+        PlaceTile(tilemap, decorationTileB, 0, 10);
+        PlaceTile(tilemap, decorationTileC, 9, 10);
+        PlaceTile(tilemap, decorationTileB, 12, 10);
 
         // Decorations along the bottom border.
-        PlaceTile(tilemap, barrelTile, -12, -11);
-        PlaceTile(tilemap, tombstoneTile, -8, -11);
-        PlaceTile(tilemap, crateTile, 9, -11);
+        PlaceTile(tilemap, decorationTileC, -12, -11);
+        PlaceTile(tilemap, decorationTileB, -8, -11);
+        PlaceTile(tilemap, decorationTileA, 9, -11);
 
         // Decorations along the left and right borders.
-        PlaceTile(tilemap, crateTile, -16, -4);
-        PlaceTile(tilemap, tombstoneTile, 15, 4);
-        PlaceTile(tilemap, barrelTile, 15, -4);
+        PlaceTile(tilemap, decorationTileA, -16, -4);
+        PlaceTile(tilemap, decorationTileB, 15, 4);
+        PlaceTile(tilemap, decorationTileC, 15, -4);
 
         tilemap.CompressBounds();
     }
@@ -43,20 +75,18 @@ public class ArenaDecorationGenerator : MonoBehaviour
     )
     {
         if (tile == null)
-        {
             return;
-        }
 
-        Vector3Int position = new Vector3Int(x, y, 0);
-
-        tilemap.SetTile(position, tile);
+        tilemap.SetTile(
+            new Vector3Int(x, y, 0),
+            tile
+        );
     }
 
     [ContextMenu("Clear Decorations")]
-    private void ClearDecorations()
+    public void ClearDecorations()
     {
         Tilemap tilemap = GetComponent<Tilemap>();
-
         tilemap.ClearAllTiles();
         tilemap.CompressBounds();
     }

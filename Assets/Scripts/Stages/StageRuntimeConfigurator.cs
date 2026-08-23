@@ -6,12 +6,16 @@ public class StageRuntimeConfigurator : MonoBehaviour
     [SerializeField]
     private StageConfiguration[] stageConfigurations;
 
-    [Header("Game References")]
+    [Header("Gameplay References")]
+    [SerializeField] private GameManager gameManager;
+    [SerializeField] private EnemySpawner enemySpawner;
+
+    [Header("Arena Visual References")]
     [SerializeField]
-    private GameManager gameManager;
+    private ArenaFloorGenerator floorGenerator;
 
     [SerializeField]
-    private EnemySpawner enemySpawner;
+    private ArenaDecorationGenerator decorationGenerator;
 
     private void Awake()
     {
@@ -20,8 +24,7 @@ public class StageRuntimeConfigurator : MonoBehaviour
 
     private void ApplySelectedStage()
     {
-        int selectedStageId =
-            StageRunContext.SelectedStageId;
+        int selectedStageId = StageRunContext.SelectedStageId;
 
         if (!LocalSaveSystem.IsStageUnlocked(
                 selectedStageId
@@ -47,39 +50,11 @@ public class StageRuntimeConfigurator : MonoBehaviour
                 $"Stage {selectedStageId}.",
                 this
             );
-
             return;
         }
 
-        if (gameManager != null)
-        {
-            gameManager.ConfigureStage(
-                configuration
-            );
-        }
-        else
-        {
-            Debug.LogError(
-                "StageRuntimeConfigurator is missing " +
-                "the GameManager reference.",
-                this
-            );
-        }
-
-        if (enemySpawner != null)
-        {
-            enemySpawner.ConfigureStage(
-                configuration
-            );
-        }
-        else
-        {
-            Debug.LogError(
-                "StageRuntimeConfigurator is missing " +
-                "the EnemySpawner reference.",
-                this
-            );
-        }
+        ApplyGameplayConfiguration(configuration);
+        ApplyArenaVisuals(configuration);
 
         Debug.Log(
             $"Applied Stage {configuration.StageId}: " +
@@ -87,20 +62,84 @@ public class StageRuntimeConfigurator : MonoBehaviour
         );
     }
 
-    private StageConfiguration FindConfiguration(
-        int stageId
-    )
+    private void ApplyGameplayConfiguration(StageConfiguration configuration)
+    {
+        if (gameManager != null)
+            gameManager.ConfigureStage(configuration);
+        else
+            Debug.LogError(
+                "StageRuntimeConfigurator is missing " +
+                "the GameManager reference.",
+                this
+            );
+
+        if (enemySpawner != null)
+            enemySpawner.ConfigureStage(configuration);
+        else
+            Debug.LogError(
+                "StageRuntimeConfigurator is missing " +
+                "the EnemySpawner reference.",
+                this
+            );
+    }
+
+    private void ApplyArenaVisuals(StageConfiguration configuration)
+    {
+        if (floorGenerator != null)
+        {
+            floorGenerator.ConfigureTheme(
+                configuration.FloorBaseTile,
+                configuration.FloorVariationTile,
+                configuration.FloorBorderTile,
+                configuration.FloorTint,
+                configuration.FloorVariationChance,
+                configuration.VisualRandomSeed
+            );
+
+            floorGenerator.ConfigureSize(
+                configuration.ArenaHalfSize
+            );
+
+            floorGenerator.GenerateFloor();
+        }
+        else
+        {
+            Debug.LogWarning(
+                "StageRuntimeConfigurator has no " +
+                "ArenaFloorGenerator reference.",
+                this
+            );
+        }
+
+        if (decorationGenerator != null)
+        {
+            decorationGenerator.ConfigureTheme(
+                configuration.DecorationTileA,
+                configuration.DecorationTileB,
+                configuration.DecorationTileC,
+                configuration.DecorationTint
+            );
+
+            decorationGenerator.GenerateDecorations();
+        }
+        else
+        {
+            Debug.LogWarning(
+                "StageRuntimeConfigurator has no " +
+                "ArenaDecorationGenerator reference.",
+                this
+            );
+        }
+    }
+
+    private StageConfiguration FindConfiguration(int stageId)
     {
         if (stageConfigurations == null)
             return null;
 
-        foreach (
-            StageConfiguration configuration
-            in stageConfigurations
-        )
+        foreach (StageConfiguration configuration in stageConfigurations)
         {
-            if (configuration != null &&
-                configuration.StageId == stageId)
+            if (configuration != null && configuration.StageId == stageId)
             {
                 return configuration;
             }

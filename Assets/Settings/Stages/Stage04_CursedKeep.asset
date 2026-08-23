@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StageConfiguration
   stageId: 4
   stageName: CURSED KEEP
-  survivalTime: 300
+  survivalTime: 15
   arenaHalfSize: {x: 14, y: 9}
   startDelay: 1
   initialSpawnInterval: 2

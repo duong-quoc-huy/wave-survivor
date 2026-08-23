@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 [CreateAssetMenu(
     fileName = "StageConfiguration",
@@ -21,6 +22,28 @@ public class StageConfiguration : ScriptableObject
     [SerializeField]
     private Vector2 arenaHalfSize =
         new Vector2(14f, 9f);
+
+    [Header("Arena Visuals - Floor")]
+    [SerializeField] private TileBase floorBaseTile;
+    [SerializeField] private TileBase floorVariationTile;
+    [SerializeField] private TileBase floorBorderTile;
+
+    [SerializeField]
+    private Color floorTint = Color.white;
+
+    [SerializeField, Range(0f, 1f)]
+    private float floorVariationChance = 0.08f;
+
+    [SerializeField]
+    private int visualRandomSeed = 12345;
+
+    [Header("Arena Visuals - Decorations")]
+    [SerializeField] private TileBase decorationTileA;
+    [SerializeField] private TileBase decorationTileB;
+    [SerializeField] private TileBase decorationTileC;
+
+    [SerializeField]
+    private Color decorationTint = Color.white;
 
     [Header("Enemy Spawn Timing")]
     [SerializeField, Min(0f)]
@@ -57,25 +80,30 @@ public class StageConfiguration : ScriptableObject
     public float SurvivalTime => survivalTime;
     public Vector2 ArenaHalfSize => arenaHalfSize;
 
+    public TileBase FloorBaseTile => floorBaseTile;
+    public TileBase FloorVariationTile =>
+        floorVariationTile;
+    public TileBase FloorBorderTile => floorBorderTile;
+    public Color FloorTint => floorTint;
+    public float FloorVariationChance =>
+        floorVariationChance;
+    public int VisualRandomSeed => visualRandomSeed;
+
+    public TileBase DecorationTileA => decorationTileA;
+    public TileBase DecorationTileB => decorationTileB;
+    public TileBase DecorationTileC => decorationTileC;
+    public Color DecorationTint => decorationTint;
+
     public float StartDelay => startDelay;
     public float InitialSpawnInterval =>
         initialSpawnInterval;
-
     public float MinimumSpawnInterval =>
         minimumSpawnInterval;
-
     public float IntervalDecreasePerMinute =>
         intervalDecreasePerMinute;
-
-    public int MaxActiveEnemies =>
-        maxActiveEnemies;
-
-    public float SpiderUnlockTime =>
-        spiderUnlockTime;
-
-    public float SpiderSpawnChance =>
-        spiderSpawnChance;
-
+    public int MaxActiveEnemies => maxActiveEnemies;
+    public float SpiderUnlockTime => spiderUnlockTime;
+    public float SpiderSpawnChance => spiderSpawnChance;
     public bool BossStage => bossStage;
     public float BossSpawnTime => bossSpawnTime;
 }

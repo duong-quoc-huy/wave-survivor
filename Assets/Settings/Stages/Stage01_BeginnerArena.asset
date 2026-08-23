@@ -16,6 +16,16 @@ MonoBehaviour:
   stageName: BEGINNER ARENA
   survivalTime: 300
   arenaHalfSize: {x: 14, y: 9}
+  floorBaseTile: {fileID: 11400000, guid: 079e75fad8a34d64ba72f99eaa23e923, type: 2}
+  floorVariationTile: {fileID: 11400000, guid: 97eb4ad05e2a4e044aa7b72206ff4050, type: 2}
+  floorBorderTile: {fileID: 11400000, guid: 7fd70b798038e3b4eb383a938a928dcc, type: 2}
+  floorTint: {r: 0.72156864, g: 0.65882355, b: 0.6901961, a: 1}
+  floorVariationChance: 0.12
+  visualRandomSeed: 1101
+  decorationTileA: {fileID: 11400000, guid: 330c1cd2ddfed6d46b0d4d7c2a590c14, type: 2}
+  decorationTileB: {fileID: 11400000, guid: 54befd765654dcd40bad297d9d3a3b8f, type: 2}
+  decorationTileC: {fileID: 11400000, guid: a2ecaf367ce91af4bb627aa73abea87c, type: 2}
+  decorationTint: {r: 1, g: 1, b: 1, a: 1}
   startDelay: 1
   initialSpawnInterval: 2
   minimumSpawnInterval: 0.75
