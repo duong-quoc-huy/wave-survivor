@@ -35,6 +35,48 @@ public class HUDController : MonoBehaviour
     [SerializeField]
     private TMP_Text timerText;
 
+    public void BindPlayer(GameObject player)
+    {
+        if (player == null) return;
+
+        // Unsubscribe from previous references if re-binding
+        if (playerHealth != null)
+        {
+            playerHealth.HealthChanged -= UpdateHealth;
+        }
+
+        if (playerStats != null)
+        {
+            playerStats.ExperienceChanged -= UpdateExperience;
+            playerStats.LevelChanged -= UpdateLevel;
+        }
+
+        // Assign new component references
+        playerHealth = player.GetComponent<PlayerHealth>();
+        playerStats = player.GetComponent<PlayerStats>();
+
+        // Subscribe and refresh Health UI
+        if (playerHealth != null)
+        {
+            playerHealth.HealthChanged += UpdateHealth;
+            UpdateHealth(playerHealth.CurrentHealth, playerHealth.MaxHealth);
+        }
+
+        // Subscribe and refresh Experience / Level UI
+        if (playerStats != null)
+        {
+            playerStats.ExperienceChanged += UpdateExperience;
+            playerStats.LevelChanged += UpdateLevel;
+
+            UpdateExperience(
+                playerStats.CurrentExperience,
+                playerStats.ExperienceToNextLevel
+            );
+
+            UpdateLevel(playerStats.Level);
+        }
+    }
+
     private void OnEnable()
     {
         if (playerHealth != null)

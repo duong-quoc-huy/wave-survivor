@@ -1,4 +1,5 @@
 using UnityEngine;
+using Unity.Cinemachine;
 
 public class PlayerSpawner : MonoBehaviour
 {
@@ -34,10 +35,32 @@ public class PlayerSpawner : MonoBehaviour
             player.tag = "Player";
         }
 
+        // Bind GameManager
         GameManager gameManager = FindFirstObjectByType<GameManager>();
         if (gameManager != null)
         {
             gameManager.BindPlayerReferences(player);
+        }
+
+        // Bind HUD UI
+        HUDController hudController = FindFirstObjectByType<HUDController>();
+        if (hudController != null)
+        {
+            hudController.BindPlayer(player);
+        }
+
+        // Bind Camera Follow Target
+        BindCameraTarget(player.transform);
+    }
+
+    private void BindCameraTarget(Transform target)
+    {
+        // For Unity 6 CinemachineCamera
+        CinemachineCamera vcam = FindFirstObjectByType<CinemachineCamera>();
+        if (vcam != null)
+        {
+            vcam.Target.TrackingTarget = target;
+            Debug.Log("Cinemachine camera target assigned successfully.", this);
         }
     }
 }

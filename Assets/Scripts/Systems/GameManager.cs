@@ -65,6 +65,8 @@ public class GameManager : MonoBehaviour
     private bool gameStarted;
     private bool runHasEnded;
 
+
+
     private void PrepareSelectedStage()
     {
         int selectedStageId =
@@ -177,12 +179,18 @@ public class GameManager : MonoBehaviour
             ? playerStats.Level
             : 1;
 
+        // Record stage clear count for gold decay calculations
+        if (playerWon)
+        {
+            LocalSaveSystem.IncrementStageClear(currentStageId);
+        }
+
         Debug.Log(
-    $"Recording Stage {currentStageId}: " +
-    $"won={playerWon}, " +
-    $"time={survivalTime:F2}, " +
-    $"level={reachedLevel}"
-);
+            $"Recording Stage {currentStageId}: " +
+            $"won={playerWon}, " +
+            $"time={survivalTime:F2}, " +
+            $"level={reachedLevel}"
+        );
 
         LocalSaveSystem.RecordStageResult(
             currentStageId,
@@ -313,6 +321,11 @@ public class GameManager : MonoBehaviour
 
         SceneManager.LoadScene(mainMenuSceneName);
     }
+
+
+
+
+
 
     public void BindPlayerReferences(GameObject player)
     {

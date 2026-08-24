@@ -12,6 +12,47 @@ public static class LocalSaveSystem
 
     private static GameProgressData cachedData;
 
+    private const string GoldKey = "TOTAL_GOLD";
+    private const string StageClearsPrefix = "STAGE_CLEARS_";
+
+    public static int GetGold() => PlayerPrefs.GetInt(GoldKey, 0);
+
+    public static void AddGold(int amount)
+    {
+        if (amount <= 0) return;
+        PlayerPrefs.SetInt(GoldKey, GetGold() + amount);
+        PlayerPrefs.Save();
+    }
+
+    public static bool SpendGold(int amount)
+    {
+        int currentGold = GetGold();
+        if (amount <= 0 || currentGold < amount) return false;
+        PlayerPrefs.SetInt(GoldKey, currentGold - amount);
+        PlayerPrefs.Save();
+        return true;
+    }
+
+    public static int GetStageClearCount(int stageId)
+    {
+        return PlayerPrefs.GetInt(StageClearsPrefix + stageId, 0);
+    }
+
+    public static void IncrementStageClear(int stageId)
+    {
+        int current = GetStageClearCount(stageId);
+        PlayerPrefs.SetInt(StageClearsPrefix + stageId, current + 1);
+        PlayerPrefs.Save();
+    }
+
+    // Calculates gold yield decay: 100% -> 80% -> 60% -> 40% -> 20% (min)
+    public static float GetStageGoldMultiplier(int stageId)
+    {
+        int clearCount = GetStageClearCount(stageId);
+        float multiplier = 1f - (clearCount * 0.2f);
+        return Mathf.Max(0.2f, multiplier);
+    }
+
     public static string SavePath =>
         Path.Combine(
             Application.persistentDataPath,
@@ -258,9 +299,7 @@ public static class LocalSaveSystem
         return data;
     }
 
-    private static void EnsureValidData(
-        GameProgressData data
-    )
+    private static void EnsureValidData(GameProgressData data)
     {
         data.saveVersion = CurrentSaveVersion;
 
@@ -294,11 +333,7 @@ public static class LocalSaveSystem
                     .List<StageProgressData>();
         }
 
-        for (
-            int stageId = 1;
-            stageId <= TotalStageCount;
-            stageId++
-        )
+        for (int stageId = 1; stageId <= TotalStageCount; stageId++)
         {
             bool alreadyExists =
                 data.stages.Exists(

@@ -11,6 +11,11 @@ public class EnemyHealth : MonoBehaviour
     private int currentHealth;
     private bool isDead;
 
+    [Header("Gold Drops")]
+    [SerializeField] private GoldCoin goldCoinPrefab;
+    [SerializeField, Range(0f, 1f)] private float goldDropChance = 0.35f;
+    [SerializeField, Min(1)] private int baseGoldValue = 1;
+
     private void Awake()
     {
         currentHealth = maxHealth;
@@ -36,13 +41,23 @@ public class EnemyHealth : MonoBehaviour
     {
         isDead = true;
 
+        Vector3 spawnCenter = transform.position;
+        float offsetDistance = 0.4f; 
+
+
         if (xpOrbPrefab != null)
         {
-            Instantiate(
-                xpOrbPrefab,
-                transform.position,
-                Quaternion.identity
-            );
+            Vector3 xpPosition = spawnCenter + (Vector3.left * offsetDistance);
+            Instantiate(xpOrbPrefab, xpPosition, Quaternion.identity);
+        }
+
+        if (goldCoinPrefab != null && Random.value <= goldDropChance)
+        {
+            Vector3 coinPosition = spawnCenter + (Vector3.right * offsetDistance);
+            GoldCoin coin = Instantiate(goldCoinPrefab, coinPosition, Quaternion.identity);
+
+            float goldMultiplier = LocalSaveSystem.GetStageGoldMultiplier(StageRunContext.SelectedStageId);
+            coin.Initialize(baseGoldValue, goldMultiplier);
         }
 
         Destroy(gameObject);

@@ -186,3 +186,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 4
   xpOrbPrefab: {fileID: 6203023440549912989, guid: 69b927aa84bb5f34cb4476e12aab66c2, type: 3}
+  goldCoinPrefab: {fileID: 7461693587694495752, guid: 6c93b24aa9cb1484095e01f4d313d746, type: 3}
+  goldDropChance: 1
+  baseGoldValue: 5
