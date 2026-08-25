@@ -7,7 +7,7 @@ public static class LocalSaveSystem
     private const string SaveFileName =
         "wave_survivor_save.json";
 
-    private const int CurrentSaveVersion = 1;
+    private const int CurrentSaveVersion = 2;
     private const int TotalStageCount = 5;
 
     private static GameProgressData cachedData;
@@ -15,33 +15,51 @@ public static class LocalSaveSystem
     private const string GoldKey = "TOTAL_GOLD";
     private const string StageClearsPrefix = "STAGE_CLEARS_";
 
-    public static int GetGold() => PlayerPrefs.GetInt(GoldKey, 0);
+    private const string SelectedCharKey = "EQUIPPED_CHAR_ID";
+    private const string SelectedWeaponKey = "EQUIPPED_WEAPON_ID";
+
+   
+    private const string SpeedPotionKey = "POTION_SPEED_COUNT";
+    private const string AttackPotionKey = "POTION_ATTACK_COUNT";
+
+
+    private const string SkillAtkLevelKey = "SKILL_ATK_LEVEL";
+    private const string SkillSpeedLevelKey = "SKILL_SPEED_LEVEL";
+
+    public static int GetGold()
+    {
+        return Mathf.Max(0, Data.gold);
+    }
 
     public static void AddGold(int amount)
     {
-        if (amount <= 0) return;
-        PlayerPrefs.SetInt(GoldKey, GetGold() + amount);
-        PlayerPrefs.Save();
+        if (amount <= 0)
+            return;
+
+        Data.gold += amount;
+        Save();
     }
 
     public static bool SpendGold(int amount)
     {
-        int currentGold = GetGold();
-        if (amount <= 0 || currentGold < amount) return false;
-        PlayerPrefs.SetInt(GoldKey, currentGold - amount);
-        PlayerPrefs.Save();
+        if (amount <= 0)
+            return false;
+
+        if (Data.gold < amount)
+            return false;
+
+        Data.gold -= amount;
+        Save();
+
         return true;
     }
 
-    public static int GetStageClearCount(int stageId)
-    {
-        return PlayerPrefs.GetInt(StageClearsPrefix + stageId, 0);
-    }
+
+    public static int GetStageClearCount(int stageId) => PlayerPrefs.GetInt(StageClearsPrefix + stageId, 0);
 
     public static void IncrementStageClear(int stageId)
     {
-        int current = GetStageClearCount(stageId);
-        PlayerPrefs.SetInt(StageClearsPrefix + stageId, current + 1);
+        PlayerPrefs.SetInt(StageClearsPrefix + stageId, GetStageClearCount(stageId) + 1);
         PlayerPrefs.Save();
     }
 
@@ -49,9 +67,68 @@ public static class LocalSaveSystem
     public static float GetStageGoldMultiplier(int stageId)
     {
         int clearCount = GetStageClearCount(stageId);
-        float multiplier = 1f - (clearCount * 0.2f);
-        return Mathf.Max(0.2f, multiplier);
+        return Mathf.Max(0.2f, 1f - (clearCount * 0.2f));
     }
+
+    public static string GetEquippedCharacter() => PlayerPrefs.GetString(SelectedCharKey, "Warrior");
+    public static void SetEquippedCharacter(string charId) { PlayerPrefs.SetString(SelectedCharKey, charId); PlayerPrefs.Save(); }
+
+    public static string GetEquippedWeapon() => PlayerPrefs.GetString(SelectedWeaponKey, "Dagger");
+    public static void SetEquippedWeapon(string weaponId) { PlayerPrefs.SetString(SelectedWeaponKey, weaponId); PlayerPrefs.Save(); }
+
+    // Potions
+    public static int GetPotionCount(string potionType) => PlayerPrefs.GetInt("POTION_" + potionType, 0);
+
+    public static void AddPotion(string potionType, int amount)
+    {
+        int current = GetPotionCount(potionType);
+        PlayerPrefs.SetInt("POTION_" + potionType, current + amount);
+        PlayerPrefs.Save();
+    }
+
+    public static bool ConsumePotion(string potionType)
+    {
+        int current = GetPotionCount(potionType);
+        if (current <= 0) return false;
+        PlayerPrefs.SetInt("POTION_" + potionType, current - 1);
+        PlayerPrefs.Save();
+        return true;
+    }
+
+    // Skill Tree Progression
+    public static int GetSkillAtkLevel() => PlayerPrefs.GetInt(SkillAtkLevelKey, 0);
+    public static int GetSkillSpeedLevel() => PlayerPrefs.GetInt(SkillSpeedLevelKey, 0);
+
+    public static bool UpgradeSkillAtk(int cost)
+    {
+        int lvl = GetSkillAtkLevel();
+        if (lvl >= 3 || !SpendGold(cost)) return false;
+        PlayerPrefs.SetInt(SkillAtkLevelKey, lvl + 1);
+        PlayerPrefs.Save();
+        return true;
+    }
+
+    public static bool UpgradeSkillSpeed(int cost)
+    {
+        int lvl = GetSkillSpeedLevel();
+        if (lvl >= 3 || !SpendGold(cost)) return false;
+        PlayerPrefs.SetInt(SkillSpeedLevelKey, lvl + 1);
+        PlayerPrefs.Save();
+        return true;
+    }
+
+    public static int GetBonusDamage()
+    {
+        int lvl = GetSkillAtkLevel();
+        return lvl switch { 1 => 5, 2 => 10, 3 => 20, _ => 0 };
+    }
+
+    public static float GetBonusSpeed()
+    {
+        int lvl = GetSkillSpeedLevel();
+        return lvl switch { 1 => 5f, 2 => 10f, 3 => 20f, _ => 0f };
+    }
+
 
     public static string SavePath =>
         Path.Combine(
@@ -301,6 +378,16 @@ public static class LocalSaveSystem
 
     private static void EnsureValidData(GameProgressData data)
     {
+        if (data.saveVersion < 2 &&
+    PlayerPrefs.HasKey(GoldKey))
+        {
+            data.gold = Mathf.Max(
+                data.gold,
+                PlayerPrefs.GetInt(GoldKey, 0)
+            );
+        }
+
+        data.gold = Mathf.Max(0, data.gold);
         data.saveVersion = CurrentSaveVersion;
 
         data.highestUnlockedStage = Mathf.Clamp(

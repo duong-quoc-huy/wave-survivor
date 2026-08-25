@@ -47,6 +47,11 @@ public class StageSelectionController : MonoBehaviour
         RefreshStageCards();
     }
 
+    public void OpenSkillTreeScene()
+    {
+        SceneManager.LoadScene("SkillTreeScene");
+    }
+
     public void RefreshStageCards()
     {
         LocalSaveSystem.Reload();

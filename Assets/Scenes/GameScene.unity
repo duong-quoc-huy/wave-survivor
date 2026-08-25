@@ -12462,6 +12462,10 @@ MonoBehaviour:
   experienceText: {fileID: 1321984707}
   levelText: {fileID: 87389837}
   timerText: {fileID: 40912297}
+  eSkillSlot: {fileID: 0}
+  qSkillSlot: {fileID: 0}
+  speedPotionSlot: {fileID: 0}
+  attackPotionSlot: {fileID: 0}
 --- !u!114 &1402471869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15066,7 +15070,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb243461440b06d41b9410a462f4109e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawner
-  defaultCharacterPrefab: {fileID: 4987901066440670471, guid: 7b2db68112853e549a2a52ad0975bc5d, type: 3}
+  availablePlayerPrefabs:
+  - {fileID: 4987901066440670471, guid: 6b1f32578fb48284fb4c7b0d1c3e38c5, type: 3}
+  - {fileID: 4987901066440670471, guid: 7b2db68112853e549a2a52ad0975bc5d, type: 3}
+  - {fileID: 4987901066440670471, guid: 49c58f42bc096d9458ac78504e61e634, type: 3}
+  - {fileID: 4987901066440670471, guid: 0a3c78960de963146a8f401112535a3b, type: 3}
+  defaultPlayerPrefab: {fileID: 4987901066440670471, guid: 6b1f32578fb48284fb4c7b0d1c3e38c5, type: 3}
   spawnPosition: {x: 0, y: 0}
 --- !u!4 &2098256336
 Transform:

@@ -4,6 +4,8 @@ public class EnemyHealth : MonoBehaviour
 {
     [SerializeField, Min(1)]
     private int maxHealth = 3;
+    public int MaxHealth => maxHealth;
+    public int CurrentHealth => currentHealth;
 
     [SerializeField]
     private XPOrb xpOrbPrefab;
@@ -15,6 +17,10 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] private GoldCoin goldCoinPrefab;
     [SerializeField, Range(0f, 1f)] private float goldDropChance = 0.35f;
     [SerializeField, Min(1)] private int baseGoldValue = 1;
+
+    [Header("Enemy Classification")]
+    [SerializeField] private bool isBoss;
+    public bool IsBoss => isBoss;
 
     private void Awake()
     {

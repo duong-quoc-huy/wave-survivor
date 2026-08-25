@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 433897259597245718}
   - component: {fileID: 1468383326280281644}
   m_Layer: 0
-  m_Name: MAGE
+  m_Name: KNIGHT
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -88,7 +88,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 10
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 739e260e9625e85469766e253dd0d5be, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6ae1d4fbc1af8ce49ba9511524dab060, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

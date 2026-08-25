@@ -27,10 +27,12 @@ public class StageProgressData
 [Serializable]
 public class GameProgressData
 {
-    public int saveVersion = 1;
+    public int saveVersion = 2;
 
     public int highestUnlockedStage = 1;
     public int selectedCharacterId = 0;
+
+    public int gold = 0;
 
     public bool musicEnabled = true;
     public bool sfxEnabled = true;

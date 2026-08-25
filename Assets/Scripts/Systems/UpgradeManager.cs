@@ -197,4 +197,25 @@ public class UpgradeManager : MonoBehaviour
                 break;
         }
     }
+
+    public void BindPlayer(GameObject player)
+    {
+        if (player == null) return;
+
+        if (playerStats != null)
+        {
+            playerStats.LeveledUp -= ShowUpgradeChoices;
+        }
+
+        playerStats = player.GetComponent<PlayerStats>();
+        playerController = player.GetComponent<PlayerController>();
+        playerHealth = player.GetComponent<PlayerHealth>();
+        weaponController = player.GetComponent<WeaponController>();
+
+        // Subscribe to level up event
+        if (playerStats != null)
+        {
+            playerStats.LeveledUp += ShowUpgradeChoices;
+        }
+    }
 }

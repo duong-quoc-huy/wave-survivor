@@ -35,11 +35,25 @@ public class HUDController : MonoBehaviour
     [SerializeField]
     private TMP_Text timerText;
 
+    [Header("Ability Slots")]
+    [SerializeField] private AbilitySlotUI eSkillSlot;
+    [SerializeField] private AbilitySlotUI qSkillSlot;
+    [SerializeField] private AbilitySlotUI speedPotionSlot;
+    [SerializeField] private AbilitySlotUI attackPotionSlot;
+
+    private PlayerAbilities playerAbilities;
+
+    public void BindAbilities(GameObject player)
+    {
+        if (player == null) return;
+        playerAbilities = player.GetComponent<PlayerAbilities>();
+    }
+
     public void BindPlayer(GameObject player)
     {
         if (player == null) return;
 
-        // Unsubscribe from previous references if re-binding
+        
         if (playerHealth != null)
         {
             playerHealth.HealthChanged -= UpdateHealth;
@@ -51,18 +65,18 @@ public class HUDController : MonoBehaviour
             playerStats.LevelChanged -= UpdateLevel;
         }
 
-        // Assign new component references
+        
         playerHealth = player.GetComponent<PlayerHealth>();
         playerStats = player.GetComponent<PlayerStats>();
 
-        // Subscribe and refresh Health UI
+      
         if (playerHealth != null)
         {
             playerHealth.HealthChanged += UpdateHealth;
             UpdateHealth(playerHealth.CurrentHealth, playerHealth.MaxHealth);
         }
 
-        // Subscribe and refresh Experience / Level UI
+
         if (playerStats != null)
         {
             playerStats.ExperienceChanged += UpdateExperience;
@@ -74,6 +88,18 @@ public class HUDController : MonoBehaviour
             );
 
             UpdateLevel(playerStats.Level);
+        }
+
+        if (playerAbilities != null)
+        {
+            if (eSkillSlot != null)
+                eSkillSlot.UpdateSlot(playerAbilities.ECooldownRemaining, playerAbilities.ECooldownTotal);
+            if (qSkillSlot != null)
+                qSkillSlot.UpdateSlot(playerAbilities.QCooldownRemaining, playerAbilities.QCooldownTotal);
+            if (speedPotionSlot != null)
+                speedPotionSlot.UpdateSlot(0, 1, playerAbilities.SpeedPotionCount);
+            if (attackPotionSlot != null)
+                attackPotionSlot.UpdateSlot(0, 1, playerAbilities.AttackPotionCount);
         }
     }
 

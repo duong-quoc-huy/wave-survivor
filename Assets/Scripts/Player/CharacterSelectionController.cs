@@ -9,24 +9,48 @@ public class CharacterSelectionController : MonoBehaviour
 
     [Header("Navigation")]
     [SerializeField] private Button backButton;
-    [SerializeField] private string stageSelectionSceneName = "StageSelectionScene";
+    [SerializeField] private string stageSelectionSceneName = "StageSelectScene";
     [SerializeField] private string mainMenuSceneName = "MainMenuScene";
 
     private void Awake()
     {
         if (backButton != null)
+        {
+            backButton.onClick.RemoveAllListeners();
             backButton.onClick.AddListener(ReturnToMainMenu);
+        }
     }
 
-    public void SelectCharacterByIndex(int index)
+    /// <summary>
+    /// Unified selection method called by UI Card Buttons.
+    /// </summary>
+    public void SelectCharacter(int characterIndex)
     {
-        if (index < 0 || index >= characterPrefabs.Length || characterPrefabs[index] == null)
+        if (characterPrefabs == null || characterIndex < 0 || characterIndex >= characterPrefabs.Length)
         {
-            Debug.LogError($"Character selection index {index} is invalid or unassigned.", this);
+            Debug.LogError($"Character selection index {characterIndex} is invalid or unassigned.", this);
             return;
         }
 
-        StageRunContext.SelectCharacter(characterPrefabs[index]);
+        GameObject chosenPrefab = characterPrefabs[characterIndex];
+        if (chosenPrefab == null)
+        {
+            Debug.LogError($"Character prefab at index {characterIndex} is null!", this);
+            return;
+        }
+
+        string selectedName = chosenPrefab.name;
+
+        // 1. Update Persistent LocalSaveSystem & force disk write
+        LocalSaveSystem.SetEquippedCharacter(selectedName);
+        PlayerPrefs.Save();
+
+        // 2. Update In-Memory StageRunContext if used by runtime managers
+        StageRunContext.SelectCharacter(chosenPrefab);
+
+        Debug.Log($"[CharacterSelection] Successfully saved & selected: '{selectedName}'");
+
+        // 3. Load Stage Select Scene
         SceneManager.LoadScene(stageSelectionSceneName);
     }
 

@@ -26,11 +26,9 @@ public class PlatformUIController : MonoBehaviour
     private bool ShouldShowMobileControls()
     {
 #if UNITY_EDITOR
-        return
-            UnityEditor.EditorUserBuildSettings.activeBuildTarget ==
-            UnityEditor.BuildTarget.Android;
+        return SystemInfo.deviceType == DeviceType.Handheld;
 #else
-        return Application.isMobilePlatform;
+    return Application.isMobilePlatform;
 #endif
     }
 }
