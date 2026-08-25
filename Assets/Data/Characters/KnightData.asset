@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fcd3331d21363d46a1ec76acc688ab0, type: 3}
+  m_Name: KnightData
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterData
+  characterId: Knight
+  characterName: Knight
+  baseMaxHP: 10
+  baseAttack: 8
+  baseMoveSpeed: 6
+  skill1Name: Sprint
+  skill1Icon: {fileID: 2221410860956878311, guid: 580e50fbe2098ea4c8ea05449fa3300c, type: 3}
+  skill1Cooldown: 5
+  skill1Duration: 5
+  skill2Name: Field Wipe
+  skill2Icon: {fileID: 338494398412556504, guid: b3eaaf5f2627d4b45b80d7c614e8d579, type: 3}
+  skill2Cooldown: 15
+  skill2CutsceneVideo: {fileID: 32900000, guid: 49df8a8c5717ae04c84f78c40a715dd3, type: 3}

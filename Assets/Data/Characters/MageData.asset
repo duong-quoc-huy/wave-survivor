@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fcd3331d21363d46a1ec76acc688ab0, type: 3}
+  m_Name: MageData
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterData
+  characterId: Mage
+  characterName: Mage
+  baseMaxHP: 8
+  baseAttack: 7
+  baseMoveSpeed: 7
+  skill1Name: Stun Nova
+  skill1Icon: {fileID: 7617516618669280241, guid: 23d2ca87409181845aa4ed94957a4865, type: 3}
+  skill1Cooldown: 3
+  skill1Duration: 5
+  skill2Name: Life Drain
+  skill2Icon: {fileID: -1359517495563548403, guid: 2a2a44cac06b2064891079d30e6795ca, type: 3}
+  skill2Cooldown: 10
+  skill2CutsceneVideo: {fileID: 32900000, guid: 69d3cbe3d31c2a54b9295bdbae18277b, type: 3}

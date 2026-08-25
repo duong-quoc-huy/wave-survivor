@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fcd3331d21363d46a1ec76acc688ab0, type: 3}
+  m_Name: SpellcasterData
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterData
+  characterId: Spellcaster
+  characterName: Spellcaster
+  baseMaxHP: 8
+  baseAttack: 8
+  baseMoveSpeed: 8
+  skill1Name: Regeneration
+  skill1Icon: {fileID: -9063044017300439947, guid: 3f46250576519ee40af79a82f307c216, type: 3}
+  skill1Cooldown: 8
+  skill1Duration: 5
+  skill2Name: Cataclysm
+  skill2Icon: {fileID: 6605283560793580422, guid: 3ceaecc80d7578e409326f89325cde33, type: 3}
+  skill2Cooldown: 12
+  skill2CutsceneVideo: {fileID: 32900000, guid: cf7db6308f605cc46abe9f6d2b4b0772, type: 3}
