@@ -34,6 +34,13 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
     }
 
+    public void Heal(int amount)
+    {
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+
+        HealthChanged?.Invoke(currentHealth, maxHealth);
+    }
+
     public void TakeDamage(int damage)
     {
         if (

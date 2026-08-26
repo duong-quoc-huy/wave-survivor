@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 2873609036665620907}
   - component: {fileID: 433897259597245718}
   - component: {fileID: 1468383326280281644}
+  - component: {fileID: 8970283892624137226}
   m_Layer: 0
   m_Name: WARRIOR
   m_TagString: Player
@@ -250,3 +251,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
   startingExperienceRequirement: 5
   requirementMultiplier: 1.5
+--- !u!114 &8970283892624137226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4987901066440670471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c85a094a965a9ff47ac27a193a26719a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAbilities
+  allCharacterData:
+  - {fileID: 11400000, guid: 4daece3b4309aba429dcea0ce0363b96, type: 2}
+  - {fileID: 11400000, guid: 455f1a7e738ab124db249f21cd684ec3, type: 2}
+  - {fileID: 11400000, guid: bc0411a7f90ff294481c044ef4a4eb73, type: 2}
+  - {fileID: 11400000, guid: 6131570c54b55f8439be28155c62aee4, type: 2}
+  eSkillSlot: {fileID: 0}
+  qSkillSlot: {fileID: 0}
+  cutscenePanel: {fileID: 0}
+  cutsceneRawImage: {fileID: 0}
+  videoPlayer: {fileID: 0}

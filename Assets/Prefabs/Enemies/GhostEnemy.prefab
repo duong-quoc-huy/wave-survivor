@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8836366788305692468}
   m_Layer: 6
   m_Name: GhostEnemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -170,8 +170,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832b66da4f59ed45b48a2e6d3628693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
-  moveSpeed: 2
-  contactDamage: 1
+  moveSpeed: 5
+  contactDamage: 3
 --- !u!114 &8836366788305692468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,8 +184,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c9e1ac8b876df54da1c305c8383c234, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHealth: 3
+  maxHealth: 30
   xpOrbPrefab: {fileID: 6203023440549912989, guid: 69b927aa84bb5f34cb4476e12aab66c2, type: 3}
   goldCoinPrefab: {fileID: 7461693587694495752, guid: 6c93b24aa9cb1484095e01f4d313d746, type: 3}
   goldDropChance: 1
   baseGoldValue: 3
+  isBoss: 0

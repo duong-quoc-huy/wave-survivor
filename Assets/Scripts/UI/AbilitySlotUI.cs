@@ -6,21 +6,61 @@ public class AbilitySlotUI : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private Image iconImage;
-    [SerializeField] private Image cooldownOverlay; // Image Type must be set to "Filled"
+    [SerializeField] private Image cooldownOverlay;
     [SerializeField] private TMP_Text cooldownText;
-    [SerializeField] private TMP_Text keyText; // Shows "E" or "Q"
-    [SerializeField] private TMP_Text countText; // Shows potion/item quantity (e.g., "3")
+    [SerializeField] private TMP_Text keyText;
+    [SerializeField] private TMP_Text countText;
 
     private float cooldownDuration;
     private float currentCooldown = 0f;
 
-    public bool IsOnCooldown => currentCooldown > 0f;
+    private void Awake()
+    {
+        AutoFindChildReferences();
+    }
+
+    public void AutoFindChildReferences()
+    {
+        if (iconImage == null)
+        {
+            Transform t = transform.Find("IconImage");
+            if (t != null) iconImage = t.GetComponent<Image>();
+        }
+
+        if (cooldownOverlay == null)
+        {
+            Transform t = transform.Find("CooldownOverlay");
+            if (t != null) cooldownOverlay = t.GetComponent<Image>();
+        }
+
+        if (cooldownText == null)
+        {
+            Transform t = transform.Find("CooldownText");
+            if (t != null) cooldownText = t.GetComponent<TMP_Text>();
+        }
+
+        if (keyText == null)
+        {
+            Transform t = transform.Find("KeyText");
+            if (t == null) t = transform.Find("KeyBadge/KeyText");
+            if (t != null) keyText = t.GetComponent<TMP_Text>();
+        }
+
+        if (countText == null)
+        {
+            Transform t = transform.Find("CountText");
+            if (t != null) countText = t.GetComponent<TMP_Text>();
+        }
+    }
 
     public void SetupSlot(Sprite icon, string keyLabel)
     {
+        AutoFindChildReferences();
+
         if (iconImage != null && icon != null)
         {
             iconImage.sprite = icon;
+            iconImage.color = Color.white;
             iconImage.enabled = true;
         }
 
@@ -32,16 +72,21 @@ public class AbilitySlotUI : MonoBehaviour
         ResetCooldown();
     }
 
-    // Called by HUDController to sync remaining cooldowns and item counts
+    // Called by HUDController to sync slot data
     public void UpdateSlot(float remainingCooldown, float totalCooldown, int stackCount = -1)
     {
+        AutoFindChildReferences();
+
         currentCooldown = Mathf.Max(0f, remainingCooldown);
         cooldownDuration = totalCooldown;
 
         if (cooldownDuration > 0f && currentCooldown > 0f)
         {
             if (cooldownOverlay != null)
+            {
+                cooldownOverlay.gameObject.SetActive(true);
                 cooldownOverlay.fillAmount = currentCooldown / cooldownDuration;
+            }
 
             if (cooldownText != null)
             {
@@ -54,7 +99,6 @@ public class AbilitySlotUI : MonoBehaviour
             ResetCooldown();
         }
 
-        // Display stack count if provided (used for potions)
         if (countText != null)
         {
             if (stackCount >= 0)
@@ -82,7 +126,10 @@ public class AbilitySlotUI : MonoBehaviour
             currentCooldown -= Time.deltaTime;
 
             if (cooldownOverlay != null)
-                cooldownOverlay.fillAmount = currentCooldown / cooldownDuration;
+            {
+                cooldownOverlay.gameObject.SetActive(true);
+                cooldownOverlay.fillAmount = cooldownDuration > 0 ? (currentCooldown / cooldownDuration) : 0f;
+            }
 
             if (cooldownText != null)
             {
@@ -100,7 +147,13 @@ public class AbilitySlotUI : MonoBehaviour
     private void ResetCooldown()
     {
         currentCooldown = 0f;
-        if (cooldownOverlay != null) cooldownOverlay.fillAmount = 0f;
-        if (cooldownText != null) cooldownText.gameObject.SetActive(false);
+        if (cooldownOverlay != null)
+        {
+            cooldownOverlay.fillAmount = 0f;
+        }
+        if (cooldownText != null)
+        {
+            cooldownText.gameObject.SetActive(false);
+        }
     }
 }

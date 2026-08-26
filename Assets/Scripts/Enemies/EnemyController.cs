@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -11,25 +12,24 @@ public class EnemyController : MonoBehaviour
 
     private Rigidbody2D body;
     private Transform target;
+    private SpriteRenderer spriteRenderer;
+
     private float speedMultiplier = 1f;
+    private bool isStunned = false;
 
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void Start()
     {
-        GameObject player =
-            GameObject.FindGameObjectWithTag("Player");
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
 
         if (player == null)
         {
-            Debug.LogError(
-                "EnemyController could not find a GameObject tagged Player.",
-                this
-            );
-
+            Debug.LogError("EnemyController could not find a GameObject tagged Player.", this);
             enabled = false;
             return;
         }
@@ -39,7 +39,8 @@ public class EnemyController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (target == null)
+        // Stop movement if there is no target or if enemy is currently stunned
+        if (target == null || isStunned)
         {
             return;
         }
@@ -55,12 +56,43 @@ public class EnemyController : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        PlayerHealth playerHealth =
-            other.GetComponentInParent<PlayerHealth>();
+        // Don't deal damage to player while stunned
+        if (isStunned) return;
+
+        PlayerHealth playerHealth = other.GetComponentInParent<PlayerHealth>();
 
         if (playerHealth != null)
         {
             playerHealth.TakeDamage(contactDamage);
+        }
+    }
+
+    // --- Stun Functionality ---
+    public void ApplyStun(float duration)
+    {
+        StartCoroutine(StunRoutine(duration));
+    }
+
+    private IEnumerator StunRoutine(float duration)
+    {
+        isStunned = true;
+
+        // Visual feedback: Tint enemy blue/cyan while frozen
+        Color originalColor = Color.white;
+        if (spriteRenderer != null)
+        {
+            originalColor = spriteRenderer.color;
+            spriteRenderer.color = Color.cyan;
+        }
+
+        yield return new WaitForSeconds(duration);
+
+        isStunned = false;
+
+        // Restore original color
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = originalColor;
         }
     }
 
@@ -74,10 +106,10 @@ public class EnemyController : MonoBehaviour
         speedMultiplier = 1f;
     }
 
-
     private void OnDisable()
     {
         speedMultiplier = 1f;
+        isStunned = false;
 
         if (body != null)
             body.linearVelocity = Vector2.zero;
