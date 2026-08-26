@@ -16,16 +16,19 @@ MonoBehaviour:
   stageName: BEGINNER ARENA
   survivalTime: 300
   arenaHalfSize: {x: 14, y: 9}
+  overrideArenaVisuals: 0
   floorBaseTile: {fileID: 11400000, guid: 079e75fad8a34d64ba72f99eaa23e923, type: 2}
-  floorVariationTile: {fileID: 11400000, guid: 97eb4ad05e2a4e044aa7b72206ff4050, type: 2}
+  floorVariationTiles: []
   floorBorderTile: {fileID: 11400000, guid: 7fd70b798038e3b4eb383a938a928dcc, type: 2}
-  floorTint: {r: 0.72156864, g: 0.65882355, b: 0.6901961, a: 1}
   floorVariationChance: 0.12
-  visualRandomSeed: 1101
-  decorationTileA: {fileID: 11400000, guid: 330c1cd2ddfed6d46b0d4d7c2a590c14, type: 2}
-  decorationTileB: {fileID: 11400000, guid: 54befd765654dcd40bad297d9d3a3b8f, type: 2}
-  decorationTileC: {fileID: 11400000, guid: a2ecaf367ce91af4bb627aa73abea87c, type: 2}
-  decorationTint: {r: 1, g: 1, b: 1, a: 1}
+  floorRandomSeed: 12345
+  floorTint: {r: 0.72156864, g: 0.65882355, b: 0.6901961, a: 1}
+  overrideArenaDecorations: 0
+  arenaDecorationTiles: []
+  arenaDecorationCount: 12
+  decorationEdgeInset: 1
+  decorationRandomSeed: 54321
+  enemyRoster: []
   startDelay: 1
   initialSpawnInterval: 2
   minimumSpawnInterval: 0.75
@@ -34,4 +37,6 @@ MonoBehaviour:
   spiderUnlockTime: 60
   spiderSpawnChance: 0.35
   bossStage: 0
+  bossPrefab: {fileID: 0}
+  stageBGM: {fileID: 8300000, guid: 5be1dc1ecccf5a44cab7ac5494903b01, type: 3}
   bossSpawnTime: 240

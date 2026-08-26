@@ -20,19 +20,32 @@ public class PlayerAbilities : MonoBehaviour
     [SerializeField] private VideoPlayer videoPlayer;
 
     private CharacterData characterData;
+    private PlayerHealth playerHealth;
+    private PlayerStats playerStats;
+
     private float skill1CooldownTimer = 0f;
     private float skill2CooldownTimer = 0f;
     private bool isExecutingSkill2 = false;
 
-    // Persistent texture to prevent GC allocation stutter
     private RenderTexture cutsceneTexture;
 
     public float ECooldownRemaining => skill1CooldownTimer;
     public float ECooldownTotal => characterData != null ? characterData.skill1Cooldown : 1f;
     public float QCooldownRemaining => skill2CooldownTimer;
     public float QCooldownTotal => characterData != null ? characterData.skill2Cooldown : 1f;
-    public int SpeedPotionCount { get; private set; } = 0;
-    public int AttackPotionCount { get; private set; } = 0;
+    public int SpeedPotionCount { get; private set; } = 3;
+    public int AttackPotionCount { get; private set; } = 3;
+
+    private void Awake()
+    {
+        playerHealth = GetComponent<PlayerHealth>();
+        EnsurePlayerStatsBound();
+
+        if (playerStats != null)
+        {
+            Debug.Log($"[PlayerAbilities] Bound to {gameObject.name} (ID: {playerStats.GetInstanceID()})");
+        }
+    }
 
     private void Start()
     {
@@ -40,6 +53,25 @@ public class PlayerAbilities : MonoBehaviour
         AutoFindSceneReferences();
         InitializeUISlots();
         PrewarmCutsceneVideo();
+    }
+
+    private void EnsurePlayerStatsBound()
+    {
+        if (playerStats != null) return;
+
+        // 1. Check if attached directly to the player GameObject
+        playerStats = GetComponent<PlayerStats>();
+
+        // 2. Fallback: Find runtime spawned player tagged "Player"
+        if (playerStats == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                playerStats = playerObj.GetComponent<PlayerStats>();
+                playerHealth = playerObj.GetComponent<PlayerHealth>();
+            }
+        }
     }
 
     private void AutoFindSceneReferences()
@@ -96,7 +128,6 @@ public class PlayerAbilities : MonoBehaviour
     {
         if (videoPlayer == null || characterData == null || characterData.skill2CutsceneVideo == null) return;
 
-        // Create reusable RenderTexture once at launch
         cutsceneTexture = new RenderTexture(1280, 720, 16);
         cutsceneTexture.Create();
 
@@ -110,7 +141,6 @@ public class PlayerAbilities : MonoBehaviour
             cutsceneRawImage.color = Color.white;
         }
 
-        // Cache video into memory to eliminate disk read lag on skill press
         videoPlayer.Prepare();
     }
 
@@ -125,6 +155,10 @@ public class PlayerAbilities : MonoBehaviour
         {
             if (Keyboard.current.eKey.wasPressedThisFrame) UseSkill1();
             if (Keyboard.current.qKey.wasPressedThisFrame) UseSkill2();
+
+            // --- POTION KEY BINDINGS ---
+            if (Keyboard.current.digit1Key.wasPressedThisFrame) UseAttackPotion();
+            if (Keyboard.current.digit2Key.wasPressedThisFrame) UseSpeedPotion();
         }
     }
 
@@ -140,10 +174,23 @@ public class PlayerAbilities : MonoBehaviour
 
     private IEnumerator ExecuteSkill1Routine()
     {
+        EnsurePlayerStatsBound();
+
         switch (characterData.characterId.ToLower())
         {
             case "warrior":
             case "knight":
+                if (playerHealth != null)
+                {
+                    playerHealth.ActivateDamageReduction(characterData.skill1Duration, 0.50f);
+                    playerHealth.Heal(5);
+                }
+
+                if (playerStats != null)
+                {
+                    playerStats.ApplyTemporaryAttackBoost(5, characterData.skill1Duration);
+                }
+
                 yield return new WaitForSeconds(characterData.skill1Duration);
                 break;
 
@@ -170,7 +217,6 @@ public class PlayerAbilities : MonoBehaviour
     private IEnumerator ExecuteSkill2Cutscene()
     {
         isExecutingSkill2 = true;
-
         Time.timeScale = 0f;
 
         if (cutscenePanel != null && videoPlayer != null && characterData.skill2CutsceneVideo != null)
@@ -182,8 +228,6 @@ public class PlayerAbilities : MonoBehaviour
 
             videoPlayer.Stop();
             cutscenePanel.SetActive(false);
-
-            // Re-prepare for next use
             videoPlayer.Prepare();
         }
 
@@ -217,25 +261,89 @@ public class PlayerAbilities : MonoBehaviour
         }
     }
 
+    public void UseAttackPotion()
+    {
+        if (AttackPotionCount <= 0)
+        {
+            Debug.LogWarning("[PlayerAbilities] Cannot use Attack Potion: Count is 0!");
+            return;
+        }
+
+        EnsurePlayerStatsBound();
+
+        if (playerStats != null)
+        {
+            AttackPotionCount--;
+            playerStats.ApplyAttackPotion(0.30f, 150f);
+            Debug.Log($"[PlayerAbilities] Potion applied to {playerStats.gameObject.name}! AtkMultiplier is now: {playerStats.AtkPercentMultiplier}");
+        }
+        else
+        {
+            Debug.LogError("[PlayerAbilities] Failed to apply potion: PlayerStats component not found on tagged Player!", this);
+        }
+    }
+
+    public void UseSpeedPotion()
+    {
+        if (SpeedPotionCount <= 0)
+        {
+            Debug.LogWarning("[PlayerAbilities] Cannot use Speed Potion: Count is 0!");
+            return;
+        }
+
+        EnsurePlayerStatsBound();
+
+        if (playerStats != null)
+        {
+            SpeedPotionCount--;
+            playerStats.ApplySpeedPotion(0.50f, 150f);
+            Debug.Log($"[PlayerAbilities] Potion applied to {playerStats.gameObject.name}! SpeedMultiplier is now: {playerStats.SpeedPercentMultiplier}");
+        }
+        else
+        {
+            Debug.LogError("[PlayerAbilities] Failed to apply potion: PlayerStats component not found on tagged Player!", this);
+        }
+    }
+
     private void WipeAllEnemies()
     {
-        var enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        foreach (var enemy in enemies) Destroy(enemy);
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (GameObject enemyObj in enemies)
+        {
+            var enemy = enemyObj.GetComponent<EnemyController>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(int.MaxValue);
+            }
+            else
+            {
+                Destroy(enemyObj);
+            }
+        }
     }
 
     private void DamageEnemiesByMaxHP(float percent)
     {
-        Debug.Log($"Dealt {percent * 100}% Max HP damage to active monsters!");
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (GameObject enemyObj in enemies)
+        {
+            var enemy = enemyObj.GetComponent<EnemyController>();
+            if (enemy != null)
+            {
+                int damageAmount = Mathf.CeilToInt(enemy.MaxHealth * percent);
+                enemy.TakeDamage(damageAmount);
+            }
+        }
     }
 
     private IEnumerator RegenRoutine(float hpPerSec, float totalDuration)
     {
         float elapsed = 0f;
-        var healthComp = GetComponent<PlayerHealth>();
+        EnsurePlayerStatsBound();
 
         while (elapsed < totalDuration)
         {
-            if (healthComp != null) healthComp.Heal(Mathf.RoundToInt(hpPerSec));
+            if (playerHealth != null) playerHealth.Heal(Mathf.RoundToInt(hpPerSec));
             yield return new WaitForSeconds(1f);
             elapsed += 1f;
         }

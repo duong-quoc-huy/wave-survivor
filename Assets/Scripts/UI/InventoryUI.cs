@@ -46,7 +46,6 @@ public class InventoryUI : MonoBehaviour
 
     private void AutoLoadResources()
     {
-        // Dynamically fetch sprites from Assets/Resources/Icons/
         speedPotionIcon = Resources.Load<Sprite>("Icons/SpeedPotion");
         attackPotionIcon = Resources.Load<Sprite>("Icons/AttackPotion");
 
@@ -196,9 +195,37 @@ public class InventoryUI : MonoBehaviour
         if (selectedIndex < 0 || selectedIndex >= currentItems.Count) return;
 
         var item = currentItems[selectedIndex];
-        LocalSaveSystem.AddPotion(item.itemId, -1);
 
-        Debug.Log($"Used 1x {item.itemName}.");
+        
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj == null)
+        {
+            Debug.LogError("[InventoryUI] Cannot use item: No active player tagged 'Player' found in stage!");
+            return;
+        }
+
+        PlayerStats playerStats = playerObj.GetComponent<PlayerStats>();
+        if (playerStats == null)
+        {
+            Debug.LogError($"[InventoryUI] Cannot use item: PlayerStats component missing on {playerObj.name}!");
+            return;
+        }
+
+        
+        if (item.itemId.Equals("AttackPotion", System.StringComparison.OrdinalIgnoreCase))
+        {
+            playerStats.ApplyAttackPotion(0.30f, 150f); 
+            Debug.Log($"[InventoryUI] Applied +30% Attack Potion to {playerObj.name}! AtkMultiplier: {playerStats.AtkPercentMultiplier}");
+        }
+        else if (item.itemId.Equals("SpeedPotion", System.StringComparison.OrdinalIgnoreCase))
+        {
+            playerStats.ApplySpeedPotion(0.50f, 150f); 
+            Debug.Log($"[InventoryUI] Applied +50% Speed Potion to {playerObj.name}! SpeedMultiplier: {playerStats.SpeedPercentMultiplier}");
+        }
+
+        
+        LocalSaveSystem.AddPotion(item.itemId, -1);
+        Debug.Log($"Used 1x {item.itemName}. Remaining: {LocalSaveSystem.GetPotionCount(item.itemId)}");
 
         RefreshInventory();
     }

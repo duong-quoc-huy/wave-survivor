@@ -111,6 +111,9 @@ public class StageConfiguration : ScriptableObject
     [SerializeField]
     private EnemyHealth bossPrefab;
 
+    [Header("Audio")]
+    public AudioClip stageBGM;
+
     [SerializeField, Min(0f)]
     private float bossSpawnTime = 240f;
 
@@ -149,4 +152,6 @@ public class StageConfiguration : ScriptableObject
     public EnemyHealth BossPrefab => bossPrefab;
     public float BossSpawnTime => bossSpawnTime;
     public StageEnemyEntry[] EnemyRoster => enemyRoster;
+
+
 }

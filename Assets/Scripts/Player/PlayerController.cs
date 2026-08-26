@@ -9,10 +9,12 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D body;
     private Vector2 movementInput;
+    private PlayerStats playerStats;
 
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
+        playerStats = GetComponent<PlayerStats>();
     }
 
     public void OnMove(InputValue value)
@@ -23,7 +25,10 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         Vector2 direction = Vector2.ClampMagnitude(movementInput, 1f);
-        body.linearVelocity = direction * moveSpeed;
+
+        float activeSpeed = playerStats != null ? playerStats.CurrentSpeed : moveSpeed;
+
+        body.linearVelocity = direction * activeSpeed;
     }
 
     public void IncreaseMoveSpeed(float amount)

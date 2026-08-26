@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -13,6 +14,7 @@ public class PlayerHealth : MonoBehaviour
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
     public bool IsDead => isDead;
+    public bool IsSkill1Active => isSkill1Active;
 
     public event Action<int, int> HealthChanged;
     public event Action Died;
@@ -20,6 +22,10 @@ public class PlayerHealth : MonoBehaviour
     private int currentHealth;
     private float nextDamageAllowedTime;
     private bool isDead;
+
+    private bool isSkill1Active;
+    private float currentDamageReductionPercent = 0.5f;
+    private Coroutine skill1Routine;
 
     private Rigidbody2D body;
     private PlayerController playerController;
@@ -36,31 +42,50 @@ public class PlayerHealth : MonoBehaviour
 
     public void Heal(int amount)
     {
-        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        if (isDead || amount <= 0) return;
 
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         HealthChanged?.Invoke(currentHealth, maxHealth);
+    }
+
+    public void ActivateDamageReduction(float duration, float reductionPercent = 0.5f)
+    {
+        if (skill1Routine != null) StopCoroutine(skill1Routine);
+        skill1Routine = StartCoroutine(DamageReductionRoutine(duration, reductionPercent));
+    }
+
+    private IEnumerator DamageReductionRoutine(float duration, float reductionPercent)
+    {
+        isSkill1Active = true;
+        currentDamageReductionPercent = reductionPercent;
+        Debug.Log($"[PlayerHealth] Skill 1 Activated: {reductionPercent * 100}% Damage Reduction for {duration}s", this);
+
+        yield return new WaitForSeconds(duration);
+
+        isSkill1Active = false;
+        currentDamageReductionPercent = 0f;
+        Debug.Log("[PlayerHealth] Skill 1 Expired: Damage Reduction OFF", this);
     }
 
     public void TakeDamage(int damage)
     {
-        if (
-            isDead ||
-            damage <= 0 ||
-            Time.time < nextDamageAllowedTime
-        )
+        if (isDead || damage <= 0 || Time.time < nextDamageAllowedTime)
         {
             return;
         }
 
-        nextDamageAllowedTime =
-            Time.time + invincibilityDuration;
+        nextDamageAllowedTime = Time.time + invincibilityDuration;
 
-        currentHealth = Mathf.Max(currentHealth - damage, 0);
+        int finalDamage = damage;
+        if (isSkill1Active)
+        {
+            float reduced = damage * (1f - currentDamageReductionPercent);
+            finalDamage = Mathf.Max(1, Mathf.FloorToInt(reduced));
+        }
 
-        Debug.Log(
-            $"Player HP: {currentHealth}/{maxHealth}",
-            this
-        );
+        currentHealth = Mathf.Max(currentHealth - finalDamage, 0);
+
+        Debug.Log($"Player HP: {currentHealth}/{maxHealth} (Took {finalDamage} dmg, Raw: {damage})", this);
 
         HealthChanged?.Invoke(currentHealth, maxHealth);
 
@@ -72,10 +97,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void IncreaseMaxHealth(int amount)
     {
-        if (isDead || amount <= 0)
-        {
-            return;
-        }
+        if (isDead || amount <= 0) return;
 
         maxHealth += amount;
         currentHealth += amount;
@@ -83,21 +105,12 @@ public class PlayerHealth : MonoBehaviour
         HealthChanged?.Invoke(currentHealth, maxHealth);
     }
 
-
-
     private void Die()
     {
         isDead = true;
 
-        if (playerController != null)
-        {
-            playerController.enabled = false;
-        }
-
-        if (weaponController != null)
-        {
-            weaponController.enabled = false;
-        }
+        if (playerController != null) playerController.enabled = false;
+        if (weaponController != null) weaponController.enabled = false;
 
         body.linearVelocity = Vector2.zero;
 

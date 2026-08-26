@@ -52,6 +52,12 @@ public class StageSelectionController : MonoBehaviour
         SceneManager.LoadScene("SkillTreeScene");
     }
 
+    public void OpenShop()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("ShopScene");
+    }
+
     public void RefreshStageCards()
     {
         LocalSaveSystem.Reload();

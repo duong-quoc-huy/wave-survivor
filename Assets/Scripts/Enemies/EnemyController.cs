@@ -4,46 +4,71 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class EnemyController : MonoBehaviour
 {
+    [Header("Enemy Stats")]
+    [SerializeField, Min(1)]
+    private int maxHealth = 10;
+
     [SerializeField, Min(0f)]
     private float moveSpeed = 2f;
 
     [SerializeField, Min(1)]
     private int contactDamage = 1;
 
+    [SerializeField, Min(0)]
+    private int experienceValue = 1;
+
+    public int MaxHealth => maxHealth;
+    public int CurrentHealth => currentHealth;
+    public bool IsStunned => isStunned;
+
+    private int currentHealth;
     private Rigidbody2D body;
     private Transform target;
     private SpriteRenderer spriteRenderer;
 
     private float speedMultiplier = 1f;
     private bool isStunned = false;
+    private Coroutine stunRoutine;
+    private Coroutine flashRoutine;
+
+    private Color defaultColor = Color.white;
 
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        currentHealth = maxHealth;
+
+        if (spriteRenderer != null)
+        {
+            defaultColor = spriteRenderer.color;
+        }
     }
 
     private void Start()
     {
+        FindPlayerTarget();
+    }
+
+    private void FindPlayerTarget()
+    {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-
-        if (player == null)
+        if (player != null)
         {
-            Debug.LogError("EnemyController could not find a GameObject tagged Player.", this);
-            enabled = false;
-            return;
+            target = player.transform;
         }
-
-        target = player.transform;
     }
 
     private void FixedUpdate()
     {
-        // Stop movement if there is no target or if enemy is currently stunned
-        if (target == null || isStunned)
+        // Re-acquire target dynamically if spawned before player instance
+        if (target == null)
         {
-            return;
+            FindPlayerTarget();
+            if (target == null) return;
         }
+
+        if (isStunned) return;
 
         Vector2 nextPosition = Vector2.MoveTowards(
             body.position,
@@ -56,7 +81,6 @@ public class EnemyController : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        // Don't deal damage to player while stunned
         if (isStunned) return;
 
         PlayerHealth playerHealth = other.GetComponentInParent<PlayerHealth>();
@@ -67,21 +91,62 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    // --- Stun Functionality ---
+    public void TakeDamage(int damage)
+    {
+        if (currentHealth <= 0 || damage <= 0) return;
+
+        currentHealth = Mathf.Max(0, currentHealth - damage);
+
+        if (gameObject.activeInHierarchy && spriteRenderer != null)
+        {
+            if (flashRoutine != null) StopCoroutine(flashRoutine);
+            flashRoutine = StartCoroutine(HitFlashRoutine());
+        }
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    private IEnumerator HitFlashRoutine()
+    {
+        if (!isStunned && spriteRenderer != null)
+        {
+            spriteRenderer.color = Color.red;
+            yield return new WaitForSeconds(0.1f);
+            spriteRenderer.color = isStunned ? Color.cyan : defaultColor;
+        }
+    }
+
+    public void Die()
+    {
+        if (target != null)
+        {
+            PlayerStats playerStats = target.GetComponent<PlayerStats>();
+            if (playerStats != null)
+            {
+                playerStats.AddExperience(experienceValue);
+            }
+        }
+
+        Destroy(gameObject);
+    }
+
     public void ApplyStun(float duration)
     {
-        StartCoroutine(StunRoutine(duration));
+        if (!gameObject.activeInHierarchy) return;
+
+        if (stunRoutine != null) StopCoroutine(stunRoutine);
+        stunRoutine = StartCoroutine(StunRoutine(duration));
     }
 
     private IEnumerator StunRoutine(float duration)
     {
         isStunned = true;
 
-        // Visual feedback: Tint enemy blue/cyan while frozen
-        Color originalColor = Color.white;
         if (spriteRenderer != null)
         {
-            originalColor = spriteRenderer.color;
             spriteRenderer.color = Color.cyan;
         }
 
@@ -89,10 +154,9 @@ public class EnemyController : MonoBehaviour
 
         isStunned = false;
 
-        // Restore original color
         if (spriteRenderer != null)
         {
-            spriteRenderer.color = originalColor;
+            spriteRenderer.color = defaultColor;
         }
     }
 

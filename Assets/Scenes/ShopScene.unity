@@ -440,7 +440,7 @@ MonoBehaviour:
   currencyText: {fileID: 990906584}
   backButton: {fileID: 948432513}
   purchaseMessageText: {fileID: 544517526}
-  mainMenuSceneName: MainMenuScene
+  mainMenuSceneName: StageSelectScene
 --- !u!4 &192237458
 Transform:
   m_ObjectHideFlags: 0

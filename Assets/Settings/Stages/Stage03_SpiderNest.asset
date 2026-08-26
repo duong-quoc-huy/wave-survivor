@@ -51,4 +51,6 @@ MonoBehaviour:
   spiderUnlockTime: 0
   spiderSpawnChance: 1
   bossStage: 0
+  bossPrefab: {fileID: 0}
+  stageBGM: {fileID: 8300000, guid: 0e4a806717561d043a378277767c9078, type: 3}
   bossSpawnTime: 240

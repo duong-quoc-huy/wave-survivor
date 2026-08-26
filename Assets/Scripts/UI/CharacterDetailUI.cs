@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 public class CharacterDetailUI : MonoBehaviour
 {
     [Header("Panel Container")]
-    [SerializeField] private GameObject panelContainer; // Points to CharacterDetailPanel
+    [SerializeField] private GameObject panelContainer;
 
     [Header("UI References")]
     [SerializeField] private TMP_Text hpText;
@@ -19,11 +19,12 @@ public class CharacterDetailUI : MonoBehaviour
 
     private CharacterData currentCharacterData;
     private WeaponData currentWeaponData;
+    private PlayerStats runtimePlayerStats;
     private bool isOpen = false;
+
 
     private void Start()
     {
-        // Start hidden
         if (panelContainer != null)
             panelContainer.SetActive(false);
 
@@ -35,6 +36,17 @@ public class CharacterDetailUI : MonoBehaviour
         if (Keyboard.current != null && Keyboard.current.cKey.wasPressedThisFrame)
         {
             TogglePanel();
+        }
+
+     
+        if (isOpen)
+        {
+            if (runtimePlayerStats == null)
+            {
+                FindRuntimePlayer();
+            }
+            RefreshStats();
+            
         }
     }
 
@@ -48,8 +60,20 @@ public class CharacterDetailUI : MonoBehaviour
         if (isOpen)
         {
             FetchEquippedData();
+            FindRuntimePlayer();
             RefreshStats();
         }
+    }
+
+    private void FindRuntimePlayer()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            runtimePlayerStats = player.GetComponent<PlayerStats>();
+        }
+
+        Debug.Log($"[CharacterDetailUI] Bound to {player.name} (ID: {runtimePlayerStats.GetInstanceID()})");
     }
 
     public void FetchEquippedData()
@@ -71,25 +95,60 @@ public class CharacterDetailUI : MonoBehaviour
     {
         if (currentCharacterData == null) return;
 
+        // Fetch runtime multipliers if player exists in stage
+        float atkMultiplier = runtimePlayerStats != null ? runtimePlayerStats.AtkPercentMultiplier : 0f;
+
+        Debug.Log($"[CharacterDetailUI] Live AtkMultiplier: {atkMultiplier}");
+        float speedMultiplier = runtimePlayerStats != null ? runtimePlayerStats.SpeedPercentMultiplier : 0f;
+        int bonusSkillAtk = runtimePlayerStats != null ? runtimePlayerStats.BonusAttack : 0;
+
+        // --- 1. HP DISPLAY ---
         float baseHP = currentCharacterData.baseMaxHP;
         float totalHP = StatCalculator.GetTotalHP(currentCharacterData);
         float hpBonus = totalHP - baseHP;
+
         hpText.text = hpBonus > 0
             ? $"HP BASE: {baseHP} (Current: {baseHP} + {hpBonus} = {totalHP})"
             : $"HP BASE: {baseHP}";
 
+        // --- 2. ATK DISPLAY ---
         float baseATK = currentCharacterData.baseAttack;
-        float totalATK = StatCalculator.GetTotalAttack(currentCharacterData, currentWeaponData);
-        float atkBonus = totalATK - baseATK;
-        atkText.text = atkBonus > 0
-            ? $"ATK BASE: {baseATK} (Current: {baseATK} + {atkBonus} = {totalATK})"
-            : $"ATK BASE: {baseATK}";
+        float flatTotalATK = StatCalculator.GetTotalAttack(currentCharacterData, currentWeaponData) + bonusSkillAtk;
+        float finalATK = flatTotalATK * (1f + atkMultiplier);
+        float flatBonus = flatTotalATK - baseATK;
 
+        if (atkMultiplier > 0f)
+        {
+            
+            atkText.text = $"ATK BASE: {baseATK} (Current: {finalATK:F1})";
+        }
+        else if (flatBonus > 0)
+        {
+            
+            atkText.text = $"ATK BASE: {baseATK} (Current: {baseATK} + {flatBonus} = {flatTotalATK})";
+        }
+        else
+        {
+            atkText.text = $"ATK BASE: {baseATK}";
+        }
+
+        // --- 3. SPEED DISPLAY ---
         float baseSpeed = currentCharacterData.baseMoveSpeed;
-        float totalSpeed = StatCalculator.GetTotalSpeed(currentCharacterData);
-        float speedBonus = totalSpeed - baseSpeed;
-        speedText.text = speedBonus > 0
-            ? $"SPEED BASE: {baseSpeed} (Current: {baseSpeed} + {speedBonus} = {totalSpeed})"
-            : $"SPEED BASE: {baseSpeed}";
+        float flatTotalSpeed = StatCalculator.GetTotalSpeed(currentCharacterData);
+        float finalSpeed = flatTotalSpeed * (1f + speedMultiplier);
+        float speedBonus = flatTotalSpeed - baseSpeed;
+
+        if (speedMultiplier > 0f)
+        {
+            speedText.text = $"SPEED BASE: {baseSpeed} (Current: {finalSpeed:F1})";
+        }
+        else if (speedBonus > 0)
+        {
+            speedText.text = $"SPEED BASE: {baseSpeed} (Current: {baseSpeed} + {speedBonus} = {flatTotalSpeed})";
+        }
+        else
+        {
+            speedText.text = $"SPEED BASE: {baseSpeed}";
+        }
     }
 }

@@ -81,10 +81,10 @@ public class ShopController : MonoBehaviour
         switch (item.itemType)
         {
             case ShopItemType.Potion_Attack:
-                LocalSaveSystem.AddPotion("ATTACK", 1);
+                LocalSaveSystem.AddPotion("AttackPotion", 1);
                 break;
             case ShopItemType.Potion_Speed:
-                LocalSaveSystem.AddPotion("SPEED", 1);
+                LocalSaveSystem.AddPotion("SpeedPotion", 1); 
                 break;
             case ShopItemType.Weapon:
                 LocalSaveSystem.SetEquippedWeapon(item.itemId);

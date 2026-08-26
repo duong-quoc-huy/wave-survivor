@@ -40,26 +40,29 @@ public class StageRuntimeConfigurator : MonoBehaviour
             StageRunContext.SelectStage(1);
         }
 
-        StageConfiguration configuration =
-            FindConfiguration(selectedStageId);
+        StageConfiguration configuration = FindConfiguration(selectedStageId);
 
         if (configuration == null)
         {
             Debug.LogError(
-                $"No configuration was found for " +
-                $"Stage {selectedStageId}.",
+                $"No configuration was found for Stage {selectedStageId}.",
                 this
             );
 
             return;
         }
 
+        // --- PLAY STAGE BGM ---
+        if (AudioManager.Instance != null && configuration.stageBGM != null)
+        {
+            AudioManager.Instance.PlayBGM(configuration.stageBGM);
+        }
+
         if (gameManager != null)
             gameManager.ConfigureStage(configuration);
         else
             Debug.LogError(
-                "StageRuntimeConfigurator is missing " +
-                "the GameManager reference.",
+                "StageRuntimeConfigurator is missing the GameManager reference.",
                 this
             );
 
@@ -67,8 +70,7 @@ public class StageRuntimeConfigurator : MonoBehaviour
             enemySpawner.ConfigureStage(configuration);
         else
             Debug.LogError(
-                "StageRuntimeConfigurator is missing " +
-                "the EnemySpawner reference.",
+                "StageRuntimeConfigurator is missing the EnemySpawner reference.",
                 this
             );
 
@@ -76,8 +78,7 @@ public class StageRuntimeConfigurator : MonoBehaviour
             arenaFloorGenerator.ConfigureStage(configuration);
         else if (configuration.OverrideArenaVisuals)
             Debug.LogError(
-                "StageRuntimeConfigurator is missing " +
-                "the ArenaFloorGenerator reference.",
+                "StageRuntimeConfigurator is missing the ArenaFloorGenerator reference.",
                 this
             );
 
@@ -88,17 +89,16 @@ public class StageRuntimeConfigurator : MonoBehaviour
         else if (configuration.OverrideArenaDecorations)
         {
             Debug.LogError(
-                "StageRuntimeConfigurator is missing " +
-                "the ArenaDecorationGenerator reference.",
+                "StageRuntimeConfigurator is missing the ArenaDecorationGenerator reference.",
                 this
             );
         }
 
         Debug.Log(
-            $"Applied Stage {configuration.StageId}: " +
-            $"{configuration.StageName}."
+            $"Applied Stage {configuration.StageId}: {configuration.StageName}."
         );
     }
+
 
     private StageConfiguration FindConfiguration(int stageId)
     {
