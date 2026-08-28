@@ -18,6 +18,7 @@ public class PlayerAbilities : MonoBehaviour
     [SerializeField] private GameObject cutscenePanel;
     [SerializeField] private RawImage cutsceneRawImage;
     [SerializeField] private VideoPlayer videoPlayer;
+    [SerializeField, Min(1f)] private float videoPrepareTimeout = 8f;
 
     private CharacterData characterData;
     private PlayerHealth playerHealth;
@@ -97,9 +98,21 @@ public class PlayerAbilities : MonoBehaviour
                 if (cutsceneTrans != null)
                 {
                     cutscenePanel = cutsceneTrans.gameObject;
-                    cutsceneRawImage = cutscenePanel.GetComponent<RawImage>();
-                    videoPlayer = cutscenePanel.GetComponent<VideoPlayer>();
                 }
+            }
+
+            if (cutsceneRawImage == null && cutscenePanel != null)
+                cutsceneRawImage = cutscenePanel.GetComponent<RawImage>();
+
+            // Keep the VideoPlayer on the always-active HUDCanvas. The hidden
+            // CutsceneOverlay is only the display surface.
+            if (videoPlayer == null ||
+                (cutscenePanel != null && videoPlayer.gameObject == cutscenePanel))
+            {
+                videoPlayer = hudCanvas.GetComponent<VideoPlayer>();
+
+                if (videoPlayer == null)
+                    videoPlayer = hudCanvas.AddComponent<VideoPlayer>();
             }
         }
     }
@@ -128,12 +141,39 @@ public class PlayerAbilities : MonoBehaviour
     {
         if (videoPlayer == null || characterData == null || characterData.skill2CutsceneVideo == null) return;
 
-        cutsceneTexture = new RenderTexture(1280, 720, 16);
+        VideoClip clip = characterData.skill2CutsceneVideo;
+
+        // Keep the original 4K clip. The output texture follows the current
+        // display resolution so a 1080p phone does not waste GPU memory on a
+        // 4K UI texture, while a 4K display can still receive a 4K texture.
+        int sourceWidth = clip.width > 0 ? (int)clip.width : 3840;
+        int sourceHeight = clip.height > 0 ? (int)clip.height : 2160;
+        int longestDisplaySide = Mathf.Max(Screen.width, Screen.height);
+        int renderWidth = Mathf.Min(sourceWidth, Mathf.Max(1280, longestDisplaySide));
+        int renderHeight = Mathf.Max(
+            1,
+            Mathf.RoundToInt(renderWidth * (sourceHeight / (float)sourceWidth))
+        );
+
+        cutsceneTexture = new RenderTexture(
+            renderWidth,
+            renderHeight,
+            0,
+            RenderTextureFormat.ARGB32
+        );
+        cutsceneTexture.name = "QSkillCutsceneTexture";
         cutsceneTexture.Create();
 
+        videoPlayer.enabled = true;
+        videoPlayer.playOnAwake = false;
+        videoPlayer.isLooping = false;
+        videoPlayer.waitForFirstFrame = true;
+        videoPlayer.skipOnDrop = true;
+        videoPlayer.timeUpdateMode = VideoTimeUpdateMode.UnscaledGameTime;
         videoPlayer.renderMode = VideoRenderMode.RenderTexture;
         videoPlayer.targetTexture = cutsceneTexture;
-        videoPlayer.clip = characterData.skill2CutsceneVideo;
+        videoPlayer.audioOutputMode = VideoAudioOutputMode.Direct;
+        videoPlayer.clip = clip;
 
         if (cutsceneRawImage != null)
         {
@@ -141,6 +181,7 @@ public class PlayerAbilities : MonoBehaviour
             cutsceneRawImage.color = Color.white;
         }
 
+        // HUDCanvas stays active, so this prepares the 4K decoder before Q.
         videoPlayer.Prepare();
     }
 
@@ -217,21 +258,51 @@ public class PlayerAbilities : MonoBehaviour
     private IEnumerator ExecuteSkill2Cutscene()
     {
         isExecutingSkill2 = true;
+        float previousTimeScale = Time.timeScale;
         Time.timeScale = 0f;
 
         if (cutscenePanel != null && videoPlayer != null && characterData.skill2CutsceneVideo != null)
         {
-            cutscenePanel.SetActive(true);
-            videoPlayer.Play();
+            if (videoPlayer.clip != characterData.skill2CutsceneVideo)
+            {
+                videoPlayer.Stop();
+                videoPlayer.clip = characterData.skill2CutsceneVideo;
+            }
 
-            yield return new WaitForSecondsRealtime(2.5f);
+            if (!videoPlayer.isPrepared)
+                videoPlayer.Prepare();
 
-            videoPlayer.Stop();
-            cutscenePanel.SetActive(false);
-            videoPlayer.Prepare();
+            float prepareElapsed = 0f;
+            while (!videoPlayer.isPrepared && prepareElapsed < videoPrepareTimeout)
+            {
+                prepareElapsed += Time.unscaledDeltaTime;
+                yield return null;
+            }
+
+            if (videoPlayer.isPrepared)
+            {
+                videoPlayer.frame = 0;
+                cutscenePanel.SetActive(true);
+                videoPlayer.Play();
+
+                yield return new WaitForSecondsRealtime(2.5f);
+
+                videoPlayer.Stop();
+                cutscenePanel.SetActive(false);
+
+                // Preload again for the next Q activation.
+                videoPlayer.Prepare();
+            }
+            else
+            {
+                cutscenePanel.SetActive(false);
+                Debug.LogWarning(
+                    $"[PlayerAbilities] 4K cutscene preparation timed out after {videoPrepareTimeout:0.0}s."
+                );
+            }
         }
 
-        Time.timeScale = 1f;
+        Time.timeScale = previousTimeScale;
 
         switch (characterData.characterId.ToLower())
         {
@@ -353,6 +424,12 @@ public class PlayerAbilities : MonoBehaviour
     {
         if (cutsceneTexture != null)
         {
+            if (videoPlayer != null && videoPlayer.targetTexture == cutsceneTexture)
+                videoPlayer.targetTexture = null;
+
+            if (cutsceneRawImage != null && cutsceneRawImage.texture == cutsceneTexture)
+                cutsceneRawImage.texture = null;
+
             cutsceneTexture.Release();
             Destroy(cutsceneTexture);
         }

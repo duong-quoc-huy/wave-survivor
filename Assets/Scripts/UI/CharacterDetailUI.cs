@@ -95,10 +95,10 @@ public class CharacterDetailUI : MonoBehaviour
     {
         if (currentCharacterData == null) return;
 
-        // Fetch runtime multipliers if player exists in stage
+        
         float atkMultiplier = runtimePlayerStats != null ? runtimePlayerStats.AtkPercentMultiplier : 0f;
 
-        Debug.Log($"[CharacterDetailUI] Live AtkMultiplier: {atkMultiplier}");
+        //Debug.Log($"[CharacterDetailUI] Live AtkMultiplier: {atkMultiplier}");
         float speedMultiplier = runtimePlayerStats != null ? runtimePlayerStats.SpeedPercentMultiplier : 0f;
         int bonusSkillAtk = runtimePlayerStats != null ? runtimePlayerStats.BonusAttack : 0;
 

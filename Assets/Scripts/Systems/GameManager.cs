@@ -58,13 +58,18 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Sprite defeatIconSprite;
 
+    [SerializeField]
+    private Button nextStageButton;
+
     [Header("Scene Navigation")]
     [SerializeField]
     private string mainMenuSceneName = "MainMenuScene";
 
+    private const int TotalStageCount = 5;
+
     private bool gameStarted;
     private bool runHasEnded;
-
+    private bool lastRunWasVictory;
 
 
     private void PrepareSelectedStage()
@@ -116,6 +121,14 @@ public class GameManager : MonoBehaviour
                 ReturnToMainMenu
             );
         }
+
+        if (nextStageButton != null)
+        {
+            nextStageButton.onClick.RemoveAllListeners();
+            nextStageButton.onClick.AddListener(GoToNextStage);
+
+            nextStageButton.gameObject.SetActive(false);
+        }
     }
 
     private void OnEnable()
@@ -156,6 +169,7 @@ public class GameManager : MonoBehaviour
 
         runHasEnded = true;
         gameStarted = false;
+        lastRunWasVictory = playerWon;
 
         if (runTimer != null)
             runTimer.StopTimer();
@@ -204,6 +218,8 @@ public class GameManager : MonoBehaviour
     private void UpdateResultUI(bool playerWon)
     {
         UpdateResultArtwork(playerWon);
+        UpdateNextStageButton(playerWon);
+
 
         if (resultTitleText != null)
         {
@@ -250,6 +266,11 @@ public class GameManager : MonoBehaviour
                 $"Survival Time: " +
                 $"{minutes:00}:{seconds:00}\n" +
                 $"Level Reached: {reachedLevel}";
+        }
+        if (playerWon && currentStageId == TotalStageCount)
+        {
+            resultStatsText.text +=
+                "\nALL STAGES COMPLETED!";
         }
     }
 
@@ -305,6 +326,22 @@ public class GameManager : MonoBehaviour
         );
     }
 
+    private void UpdateNextStageButton(bool playerWon)
+    {
+        if (nextStageButton == null)
+            return;
+
+        int nextStageId = currentStageId + 1;
+
+        bool canGoToNextStage =
+            playerWon &&
+            nextStageId <= TotalStageCount &&
+            LocalSaveSystem.IsStageUnlocked(nextStageId);
+
+        nextStageButton.gameObject.SetActive(canGoToNextStage);
+        nextStageButton.interactable = canGoToNextStage;
+    }
+
 
     public void RestartGame()
     {
@@ -314,6 +351,62 @@ public class GameManager : MonoBehaviour
             SceneManager.GetActiveScene().name
         );
     }
+
+    public void GoToNextStage()
+    {
+        if (!runHasEnded || !lastRunWasVictory)
+        {
+            Debug.LogWarning(
+                "Next Stage can only be used after a victory.",
+                this
+            );
+
+            return;
+        }
+
+        int nextStageId = currentStageId + 1;
+
+        if (nextStageId > TotalStageCount)
+        {
+            Debug.Log(
+                "The player has completed the final stage.",
+                this
+            );
+
+            return;
+        }
+
+        if (!LocalSaveSystem.IsStageUnlocked(nextStageId))
+        {
+            Debug.LogWarning(
+                $"Stage {nextStageId} has not been unlocked.",
+                this
+            );
+
+            return;
+        }
+
+        if (!StageRunContext.SelectStage(nextStageId))
+        {
+            Debug.LogError(
+                $"Failed to select Stage {nextStageId}.",
+                this
+            );
+
+            return;
+        }
+
+        // Prevent accidental double taps on mobile.
+        if (nextStageButton != null)
+            nextStageButton.interactable = false;
+
+        Time.timeScale = 1f;
+
+        SceneManager.LoadScene(
+            SceneManager.GetActiveScene().name
+        );
+    }
+
 
     public void ReturnToMainMenu()
     {

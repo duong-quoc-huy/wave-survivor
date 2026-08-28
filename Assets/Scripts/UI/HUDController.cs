@@ -35,6 +35,9 @@ public class HUDController : MonoBehaviour
     [SerializeField]
     private TMP_Text timerText;
 
+    [Header("Panels")]
+    [SerializeField] private InventoryUI inventoryUI;
+
     [Header("Ability Slots")]
     [SerializeField] private AbilitySlotUI eSkillSlot;
     [SerializeField] private AbilitySlotUI qSkillSlot;
@@ -42,6 +45,14 @@ public class HUDController : MonoBehaviour
     [SerializeField] private AbilitySlotUI attackPotionSlot;
 
     private PlayerAbilities playerAbilities;
+
+    public void ToggleInventory()
+    {
+        if (inventoryUI != null)
+        {
+            inventoryUI.ToggleInventory();
+        }
+    }
 
     public void BindAbilities(GameObject player)
     {
@@ -101,6 +112,26 @@ public class HUDController : MonoBehaviour
             if (attackPotionSlot != null)
                 attackPotionSlot.UpdateSlot(0, 1, playerAbilities.AttackPotionCount);
         }
+    }
+
+    public void OnESkillPressed()
+    {
+        if (playerAbilities != null) playerAbilities.UseSkill1();
+    }
+
+    public void OnQSkillPressed()
+    {
+        if (playerAbilities != null) playerAbilities.UseSkill2();
+    }
+
+    public void OnAttackPotionPressed()
+    {
+        if (playerAbilities != null) playerAbilities.UseAttackPotion();
+    }
+
+    public void OnSpeedPotionPressed()
+    {
+        if (playerAbilities != null) playerAbilities.UseSpeedPotion();
     }
 
     private void OnEnable()
