@@ -15,6 +15,8 @@ public class Projectile : MonoBehaviour
     private Rigidbody2D body;
     private bool hasHit;
 
+    public int BaseDamage => damage;
+
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
@@ -28,6 +30,17 @@ public class Projectile : MonoBehaviour
     public void Initialize(Vector2 direction, int bonusDamage)
     {
         damage += Mathf.Max(0, bonusDamage);
+
+        body.linearVelocity =
+            direction.normalized * speed;
+    }
+
+    public void InitializeWithDamage(
+        Vector2 direction,
+        int finalDamage
+    )
+    {
+        damage = Mathf.Max(1, finalDamage);
 
         body.linearVelocity =
             direction.normalized * speed;

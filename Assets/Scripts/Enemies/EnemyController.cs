@@ -35,6 +35,13 @@ public class EnemyController : MonoBehaviour
 
     private void Awake()
     {
+        maxHealth = AdminConsole.ResolveEnemyMaxHp(maxHealth);
+        moveSpeed = AdminConsole.ResolveEnemyMoveSpeed(moveSpeed);
+        contactDamage =
+            AdminConsole.ResolveEnemyContactDamage(contactDamage);
+        experienceValue =
+            AdminConsole.ResolveEnemyXpDropValue(experienceValue);
+
         body = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         currentHealth = maxHealth;

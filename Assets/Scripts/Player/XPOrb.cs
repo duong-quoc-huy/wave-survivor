@@ -8,6 +8,12 @@ public class XPOrb : MonoBehaviour
 
     private bool hasBeenCollected;
 
+    private void Awake()
+    {
+        experienceValue =
+            AdminConsole.ResolveEnemyXpDropValue(experienceValue);
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (hasBeenCollected)

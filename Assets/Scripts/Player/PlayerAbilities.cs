@@ -223,7 +223,14 @@ public class PlayerAbilities : MonoBehaviour
             case "knight":
                 if (playerHealth != null)
                 {
-                    playerHealth.ActivateDamageReduction(characterData.skill1Duration, 0.50f);
+                    float damageReduction =
+                        AdminConsole.ResolvePlayerDamageReduction(0.50f);
+
+                    playerHealth.ActivateDamageReduction(
+                        characterData.skill1Duration,
+                        damageReduction
+                    );
+
                     playerHealth.Heal(5);
                 }
 
@@ -344,9 +351,25 @@ public class PlayerAbilities : MonoBehaviour
 
         if (playerStats != null)
         {
+            float attackBoost =
+                AdminConsole.ResolveAttackPotionMultiplier(0.30f);
+
+            float attackDuration =
+                AdminConsole.ResolveAttackPotionDuration(150f);
+
             AttackPotionCount--;
-            playerStats.ApplyAttackPotion(0.30f, 150f);
-            Debug.Log($"[PlayerAbilities] Potion applied to {playerStats.gameObject.name}! AtkMultiplier is now: {playerStats.AtkPercentMultiplier}");
+
+            playerStats.ApplyAttackPotion(
+                attackBoost,
+                attackDuration
+            );
+
+            Debug.Log(
+                $"[PlayerAbilities] Attack Potion applied to " +
+                $"{playerStats.gameObject.name}: " +
+                $"+{attackBoost * 100f:0}% ATK for " +
+                $"{attackDuration:0.#} seconds."
+            );
         }
         else
         {
@@ -366,9 +389,25 @@ public class PlayerAbilities : MonoBehaviour
 
         if (playerStats != null)
         {
+            float speedBoost =
+                AdminConsole.ResolveSpeedPotionMultiplier(0.50f);
+
+            float speedDuration =
+                AdminConsole.ResolveSpeedPotionDuration(150f);
+
             SpeedPotionCount--;
-            playerStats.ApplySpeedPotion(0.50f, 150f);
-            Debug.Log($"[PlayerAbilities] Potion applied to {playerStats.gameObject.name}! SpeedMultiplier is now: {playerStats.SpeedPercentMultiplier}");
+
+            playerStats.ApplySpeedPotion(
+                speedBoost,
+                speedDuration
+            );
+
+            Debug.Log(
+                $"[PlayerAbilities] Speed Potion applied to " +
+                $"{playerStats.gameObject.name}: " +
+                $"+{speedBoost * 100f:0}% speed for " +
+                $"{speedDuration:0.#} seconds."
+            );
         }
         else
         {

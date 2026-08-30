@@ -196,7 +196,7 @@ public class InventoryUI : MonoBehaviour
 
         var item = currentItems[selectedIndex];
 
-        
+
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj == null)
         {
@@ -211,19 +211,25 @@ public class InventoryUI : MonoBehaviour
             return;
         }
 
-        
+
         if (item.itemId.Equals("AttackPotion", System.StringComparison.OrdinalIgnoreCase))
         {
-            playerStats.ApplyAttackPotion(0.30f, 150f); 
+            playerStats.ApplyAttackPotion(
+                AdminConsole.ResolveAttackPotionMultiplier(0.30f),
+                AdminConsole.ResolveAttackPotionDuration(150f)
+            );
             Debug.Log($"[InventoryUI] Applied +30% Attack Potion to {playerObj.name}! AtkMultiplier: {playerStats.AtkPercentMultiplier}");
         }
         else if (item.itemId.Equals("SpeedPotion", System.StringComparison.OrdinalIgnoreCase))
         {
-            playerStats.ApplySpeedPotion(0.50f, 150f); 
+            playerStats.ApplySpeedPotion(
+                AdminConsole.ResolveSpeedPotionMultiplier(0.50f),
+                AdminConsole.ResolveSpeedPotionDuration(150f)
+            );
             Debug.Log($"[InventoryUI] Applied +50% Speed Potion to {playerObj.name}! SpeedMultiplier: {playerStats.SpeedPercentMultiplier}");
         }
 
-        
+
         LocalSaveSystem.AddPotion(item.itemId, -1);
         Debug.Log($"Used 1x {item.itemName}. Remaining: {LocalSaveSystem.GetPotionCount(item.itemId)}");
 

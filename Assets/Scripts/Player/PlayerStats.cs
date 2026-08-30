@@ -51,6 +51,20 @@ public class PlayerStats : MonoBehaviour
 
     private void Awake()
     {
+        startingExperienceRequirement =
+            AdminConsole.ResolveStartingXpRequirement(
+                startingExperienceRequirement
+            );
+        requirementMultiplier =
+            AdminConsole.ResolveXpRequirementMultiplier(
+                requirementMultiplier
+            );
+        baseHp = AdminConsole.ResolvePlayerBaseHp(
+            Mathf.RoundToInt(baseHp)
+        );
+        baseAtk = AdminConsole.ResolvePlayerBaseAtk(baseAtk);
+        baseSpeed = AdminConsole.ResolvePlayerBaseSpeed(baseSpeed);
+
         ExperienceToNextLevel = startingExperienceRequirement;
     }
 

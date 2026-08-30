@@ -16,6 +16,12 @@ public class WeaponController : MonoBehaviour
 
     private float attackTimer;
     private int projectileDamageBonus;
+    private PlayerStats playerStats;
+
+    private void Awake()
+    {
+        playerStats = GetComponent<PlayerStats>();
+    }
 
     private void Update()
     {
@@ -82,7 +88,14 @@ public class WeaponController : MonoBehaviour
             Quaternion.identity
         );
 
-        projectile.Initialize(direction, projectileDamageBonus);
+        int baseDamage = playerStats != null
+            ? Mathf.Max(1, Mathf.RoundToInt(playerStats.CurrentAtk))
+            : projectile.BaseDamage;
+
+        projectile.InitializeWithDamage(
+            direction,
+            baseDamage + projectileDamageBonus
+        );
         return true;
     }
 

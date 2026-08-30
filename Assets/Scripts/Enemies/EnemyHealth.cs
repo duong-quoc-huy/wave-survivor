@@ -24,6 +24,12 @@ public class EnemyHealth : MonoBehaviour
 
     private void Awake()
     {
+        maxHealth = AdminConsole.ResolveEnemyMaxHp(maxHealth);
+        goldDropChance =
+            AdminConsole.ResolveGoldDropChance(goldDropChance);
+        baseGoldValue =
+            AdminConsole.ResolveBaseGoldValue(baseGoldValue);
+
         currentHealth = maxHealth;
     }
 
@@ -48,7 +54,7 @@ public class EnemyHealth : MonoBehaviour
         isDead = true;
 
         Vector3 spawnCenter = transform.position;
-        float offsetDistance = 0.4f; 
+        float offsetDistance = 0.4f;
 
 
         if (xpOrbPrefab != null)

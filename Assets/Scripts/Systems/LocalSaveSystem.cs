@@ -18,7 +18,7 @@ public static class LocalSaveSystem
     private const string SelectedCharKey = "EQUIPPED_CHAR_ID";
     private const string SelectedWeaponKey = "EQUIPPED_WEAPON_ID";
 
-   
+
     private const string SpeedPotionKey = "POTION_SPEED_COUNT";
     private const string AttackPotionKey = "POTION_ATTACK_COUNT";
 
@@ -67,7 +67,13 @@ public static class LocalSaveSystem
     public static float GetStageGoldMultiplier(int stageId)
     {
         int clearCount = GetStageClearCount(stageId);
-        return Mathf.Max(0.2f, 1f - (clearCount * 0.2f));
+        float decayPerClear =
+            AdminConsole.ResolveGoldMultiplierDecay(0.2f);
+
+        return Mathf.Max(
+            0.2f,
+            1f - (clearCount * decayPerClear)
+        );
     }
 
     public static string GetEquippedCharacter() => PlayerPrefs.GetString(SelectedCharKey, "Warrior");
@@ -372,6 +378,7 @@ public static class LocalSaveSystem
             new GameProgressData();
 
         EnsureValidData(data);
+        data.gold = AdminConsole.ResolveStartingGold(data.gold);
 
         return data;
     }

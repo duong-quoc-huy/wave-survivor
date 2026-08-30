@@ -33,6 +33,12 @@ public class PlayerHealth : MonoBehaviour
 
     private void Awake()
     {
+        maxHealth = AdminConsole.ResolvePlayerBaseHp(maxHealth);
+        invincibilityDuration =
+            AdminConsole.ResolvePlayerInvincibilityDuration(
+                invincibilityDuration
+            );
+
         body = GetComponent<Rigidbody2D>();
         playerController = GetComponent<PlayerController>();
         weaponController = GetComponent<WeaponController>();
@@ -80,7 +86,7 @@ public class PlayerHealth : MonoBehaviour
         if (isSkill1Active)
         {
             float reduced = damage * (1f - currentDamageReductionPercent);
-            finalDamage = Mathf.Max(1, Mathf.FloorToInt(reduced));
+            finalDamage = Mathf.Max(0, Mathf.FloorToInt(reduced));
         }
 
         currentHealth = Mathf.Max(currentHealth - finalDamage, 0);

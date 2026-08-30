@@ -2501,6 +2501,95 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!1 &1791480000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1791480003}
+  - component: {fileID: 1791480002}
+  - component: {fileID: 1791480001}
+  m_Layer: 0
+  m_Name: AdminConsole
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1791480001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791480000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 608fad7838e475b44a3137d7575b5667, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeveloperTerminal
+  terminalEnabled: 1
+  enableInEditor: 1
+  enableInDevelopmentBuild: 1
+  enableInReleaseBuild: 1
+  showDevButton: 1
+  pauseGameWhileOpen: 1
+  toggleKey: 94
+  alternateToggleKey: 4
+  windowWidthPercent: 0.88
+  windowHeightPercent: 0.82
+  maximumLogLines: 80
+--- !u!114 &1791480002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791480000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eefee8214d85f2e4b82edbf07e83dd60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AdminConsole
+  cheatsEnabled: 0
+  playerBaseHp: 99999
+  playerBaseAtk: 99999
+  playerBaseSpeed: 10
+  playerInvincibilityDuration: 9999
+  playerDamageReductionPercent: 1
+  startingXpRequirement: 1
+  xpRequirementMultiplier: 1
+  enemyXpDropValue: 100
+  attackPotionMultiplier: 5
+  attackPotionDuration: 99999
+  speedPotionMultiplier: 3
+  speedPotionDuration: 99999
+  enemyMaxHp: 1
+  enemyMoveSpeed: 0.5
+  enemyContactDamage: 0
+  goldDropChance: 1
+  baseGoldValue: 100
+  startingGold: 99999
+  disableGoldMultiplierDecay: 1
+  goldMultiplierDecay: 0.2
+--- !u!4 &1791480003
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791480000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 663.3856, y: 273.12784, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1873263995
 GameObject:
   m_ObjectHideFlags: 0
@@ -3149,3 +3238,4 @@ SceneRoots:
   - {fileID: 848942267}
   - {fileID: 652844041}
   - {fileID: 101017131}
+  - {fileID: 1791480003}

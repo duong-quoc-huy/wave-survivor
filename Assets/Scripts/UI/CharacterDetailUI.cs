@@ -38,7 +38,7 @@ public class CharacterDetailUI : MonoBehaviour
             TogglePanel();
         }
 
-     
+
         if (isOpen)
         {
             if (runtimePlayerStats == null)
@@ -46,7 +46,7 @@ public class CharacterDetailUI : MonoBehaviour
                 FindRuntimePlayer();
             }
             RefreshStats();
-            
+
         }
     }
 
@@ -95,15 +95,17 @@ public class CharacterDetailUI : MonoBehaviour
     {
         if (currentCharacterData == null) return;
 
-        
+        // Fetch runtime multipliers if player exists in stage
         float atkMultiplier = runtimePlayerStats != null ? runtimePlayerStats.AtkPercentMultiplier : 0f;
 
-        //Debug.Log($"[CharacterDetailUI] Live AtkMultiplier: {atkMultiplier}");
+        Debug.Log($"[CharacterDetailUI] Live AtkMultiplier: {atkMultiplier}");
         float speedMultiplier = runtimePlayerStats != null ? runtimePlayerStats.SpeedPercentMultiplier : 0f;
         int bonusSkillAtk = runtimePlayerStats != null ? runtimePlayerStats.BonusAttack : 0;
 
         // --- 1. HP DISPLAY ---
-        float baseHP = currentCharacterData.baseMaxHP;
+        float baseHP = AdminConsole.ResolvePlayerBaseHp(
+            Mathf.RoundToInt(currentCharacterData.baseMaxHP)
+        );
         float totalHP = StatCalculator.GetTotalHP(currentCharacterData);
         float hpBonus = totalHP - baseHP;
 
@@ -112,19 +114,21 @@ public class CharacterDetailUI : MonoBehaviour
             : $"HP BASE: {baseHP}";
 
         // --- 2. ATK DISPLAY ---
-        float baseATK = currentCharacterData.baseAttack;
+        float baseATK = AdminConsole.ResolvePlayerBaseAtk(
+            currentCharacterData.baseAttack
+        );
         float flatTotalATK = StatCalculator.GetTotalAttack(currentCharacterData, currentWeaponData) + bonusSkillAtk;
         float finalATK = flatTotalATK * (1f + atkMultiplier);
         float flatBonus = flatTotalATK - baseATK;
 
         if (atkMultiplier > 0f)
         {
-            
+
             atkText.text = $"ATK BASE: {baseATK} (Current: {finalATK:F1})";
         }
         else if (flatBonus > 0)
         {
-            
+
             atkText.text = $"ATK BASE: {baseATK} (Current: {baseATK} + {flatBonus} = {flatTotalATK})";
         }
         else
@@ -133,7 +137,9 @@ public class CharacterDetailUI : MonoBehaviour
         }
 
         // --- 3. SPEED DISPLAY ---
-        float baseSpeed = currentCharacterData.baseMoveSpeed;
+        float baseSpeed = AdminConsole.ResolvePlayerBaseSpeed(
+            currentCharacterData.baseMoveSpeed
+        );
         float flatTotalSpeed = StatCalculator.GetTotalSpeed(currentCharacterData);
         float finalSpeed = flatTotalSpeed * (1f + speedMultiplier);
         float speedBonus = flatTotalSpeed - baseSpeed;
