@@ -280,3 +280,62 @@ WaveSurvivor/
 ## License
 
 This project was developed for educational and academic purposes.
+
+The materials used in this project were selected from sources that permit their use under their respective licenses or usage terms. Third-party materials remain subject to the licenses and terms provided by their original authors or distributors.
+
+### Music Attribution
+
+The following music tracks are used in the project:
+
+1. **bg_music_1**
+
+   * **Track:** Lost Sky - Where We Started (feat. Jex) [NCS Release]
+   * **Music provided by:** NoCopyrightSounds
+   * **Source:** [Lost Sky - Where We Started (feat. Jex) | Melodic Dubstep | NCS - Copyright Free Music](https://youtu.be/U9pGr6KMdyg)
+
+2. **bg_music_2**
+
+   * **Track:** Janji - Heroes Tonight (feat. Johnning) [NCS Release]
+   * **Music provided by:** NoCopyrightSounds
+   * **Source:** [Janji - Heroes Tonight (feat. Johnning) | Progressive House | NCS - Copyright Free Music](https://youtu.be/3nQNiWdeH2Q)
+
+3. **bg_music_3**
+
+   * **Track:** Lost Sky - Dreams pt. II (feat. Sara Skinner) [NCS Release]
+   * **Music provided by:** NoCopyrightSounds
+   * **Source:** [Lost Sky - Dreams pt. II (feat. Sara Skinner) | Trap | NCS - Copyright Free Music](https://youtu.be/L7kF4MXXCoA)
+
+4. **bg_music_4**
+
+   * **Track:** Jim Yosef - Link [NCS Release]
+   * **Music provided by:** NoCopyrightSounds
+   * **Source:** [Jim Yosef - Link | House | NCS - Copyright Free Music](https://youtu.be/9iHM6X6uUH8)
+
+5. **bg_music_5**
+
+   * **Track:** Vanze - Forever (feat. Brenton Mattheus) [NCS Release]
+   * **Music provided by:** NoCopyrightSounds
+   * **Source:** [Vanze - Forever (feat. Brenton Mattheus) | Progressive House | NCS - Copyright Free Music](https://youtu.be/RX7fZ5I709Y)
+
+6. **bg_music_6**
+
+   * **Track:** Different Heaven & EH!DE - My Heart [NCS Release]
+   * **Music provided by:** NoCopyrightSounds
+   * **Source:** [Different Heaven & EH!DE - My Heart | Drumstep | NCS - Copyright Free Music](https://youtu.be/jK2aIUmmdP4)
+
+### Image and Sprite Assets
+
+The following third-party image and sprite assets are used in the project:
+
+1. **UI Pack - Pixel Adventure**
+   [Kenney - UI Pack: Pixel Adventure](https://kenney.nl/assets/ui-pack-pixel-adventure)
+
+2. **Tiny Dungeon**
+   [Kenney - Tiny Dungeon](https://kenney.nl/assets/tiny-dungeon)
+
+3. **Game Icons**
+   [Game-icons.net](https://game-icons.net/)
+
+### Third-Party Materials
+
+All third-party materials listed above belong to their respective creators and organizations. Their use in this project does not imply ownership or authorship by the WaveSurvivor development team.
